@@ -11,6 +11,9 @@
 npm-debug.log
 yarn-error.log
 
+# profiling files
+chrome-profiler-events*.json
+
 # IDEs and editors
 .idea/
 .project
@@ -29,6 +32,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
+.npmrc
 /.angular/cache
 .sass-cache/
 /connect.lock
@@ -36,7 +40,6 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
-__screenshots__/
 
 # System files
 .DS_Store

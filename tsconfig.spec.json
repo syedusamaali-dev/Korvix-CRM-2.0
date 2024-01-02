@@ -1,15 +1,32 @@
-/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about TypeScript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
 /* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "vitest/globals"
-    ]
+      "@angular/localize",
+      "vitest/globals",
+      "@vitest/browser-playwright"
+    ],
+    "paths": {
+      "@docs-components/*": ["./src/components/*"],
+      "*": ["./*"]
+    }
   },
+  "files": [
+//    "src/test.ts",
+  ],
   "include": [
-    "src/**/*.d.ts",
-    "src/**/*.spec.ts"
-  ]
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }
