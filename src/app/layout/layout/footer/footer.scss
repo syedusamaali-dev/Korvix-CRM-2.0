@@ -1,0 +1,38 @@
+/*! CSS Used from: http://127.0.0.1:5500/src/assets/css/shared/style.css */
+*,*::before,*::after{box-sizing:border-box;}
+footer{display:block;}
+a{color:#007bff;text-decoration:none;background-color:transparent;}
+a:hover{color:#0056b3;text-decoration:underline;}
+.container-fluid{width:100%;padding-right:12.5px;padding-left:12.5px;margin-right:auto;margin-left:auto;}
+.clearfix::after{display:block;clear:both;content:"";}
+.d-block{display:block!important;}
+@media (min-width: 576px){
+.d-sm-inline-block{display:inline-block!important;}
+}
+.float-none{float:none!important;}
+@media (min-width: 576px){
+.float-sm-right{float:right!important;}
+}
+.mt-1{margin-top:0.25rem!important;}
+@media (min-width: 576px){
+.mt-sm-0{margin-top:0!important;}
+}
+.text-center{text-align:center!important;}
+@media (min-width: 576px){
+.text-sm-left{text-align:left!important;}
+}
+.text-muted{color:#6c757d!important;}
+@media print{
+*,*::before,*::after{text-shadow:none!important;box-shadow:none!important;}
+a:not(.btn){text-decoration:underline;}
+}
+a,div,span{text-shadow:none;}
+a:active,a:focus,a:visited{outline:0;}
+a,a:active,a:checked,a:focus,a:hover,a:visited,div{box-shadow:none;}
+a:focus{border-color:transparent;outline:none;}
+/*! CSS Used from: http://127.0.0.1:5500/src/assets/css/demo_1/style.css */
+.footer{background:#dbdbdb;padding:20px 1rem;transition:all 0.25s ease;-moz-transition:all 0.25s ease;-webkit-transition:all 0.25s ease;-ms-transition:all 0.25s ease;border-top:1px solid #cdd6dc;font-size:calc(0.875rem - 0.05rem);font-family:"roboto", sans-serif;}
+.footer a{font-size:inherit;}
+@media (max-width: 991px){
+.footer{margin-left:0;width:100%;}
+}
