@@ -40,7 +40,7 @@ function isOverflown(element: HTMLElement) {
     ContainerComponent,
     DefaultFooterComponent,
     DefaultHeaderComponent,
-    IconDirective,
+    // IconDirective,
     NgScrollbar,
     RouterOutlet,
     RouterLink,
