@@ -1,36 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export interface Contact {
-  id: number;
-  name: string;
-  role: string;
-  email: string;
-  phone: string;
-}
-
-export interface Deal {
-  id: number;
-  title: string;
-  value: number;
-  stage: 'Qualified' | 'Proposal' | 'Negotiation' | 'Closed Won' | 'Closed Lost';
-}
-
-export interface CompanyDocument {
-  id: number;
-  name: string;
-  type: 'Contract' | 'Invoice' | 'Proposal' | 'Presentation';
-  uploadedDate: string;
-  size: string;
-}
-
-export interface Activity {
-  id: number;
-  title: string;
-  timestamp: string;
-  type: 'created' | 'contact_added' | 'deal_won' | 'meeting' | 'document';
-  description: string;
-}
+export interface Contact { id: number; name: string; role: string; email: string; phone: string; }
+export interface Deal { id: number; title: string; value: number; stage: 'Qualified' | 'Proposal' | 'Negotiation' | 'Closed Won' | 'Closed Lost'; }
+export interface CompanyDocument { id: number; name: string; type: 'Contract' | 'Invoice' | 'Proposal' | 'Presentation'; uploadedDate: string; size: string; }
+export interface Activity { id: number; title: string; timestamp: string; type: 'created' | 'contact_added' | 'deal_won' | 'meeting' | 'document'; description: string; }
 
 export interface Company {
   id: number;
@@ -59,112 +33,180 @@ export interface Company {
   createdDate: string;
   tags: string[];
   socials: { linkedin?: string; twitter?: string; facebook?: string };
-  rating: number; // 1 to 5 Stars
+  rating: number;
   contacts: Contact[];
   deals: Deal[];
   documents: CompanyDocument[];
   timeline: Activity[];
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+// Helper factory to keep mock generation short and clean
+function createCompany(id: number, data: Partial<Company>): Company {
+  const name = data.name || 'Company';
+  const domain = name.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com';
+  
+  return {
+    id,
+    name,
+    legalName: `${name} Inc.`,
+    registrationNumber: `REG-2026-${100 + id}`,
+    taxId: `US-${80000000 + id}`,
+    logo: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`,
+    website: `www.${domain}`,
+    email: `contact@${domain}`,
+    supportEmail: `support@${domain}`,
+    phone: `+1 (555) ${100 + id}-${2000 + id}`,
+    country: 'United States',
+    state: 'CA',
+    city: 'San Francisco',
+    zipCode: '94105',
+    streetAddress: `${100 * id} Tech Blvd`,
+    industry: 'Information Technology',
+    employees: 50,
+    companySize: 'SMB',
+    annualRevenue: 1000000,
+    status: 'Active',
+    priority: 'Medium',
+    source: 'Inbound Sales',
+    owner: 'Sarah Jenkins',
+    createdDate: '2026-01-10',
+    tags: ['Tech'],
+    socials: { linkedin: `https://linkedin.com/company/${name.toLowerCase().replace(/\s+/g, '')}` },
+    rating: 4,
+    contacts: [],
+    deals: [],
+    documents: [],
+    timeline: [{ id: 1, title: 'Company Created', timestamp: '2026-01-10 09:00 AM', type: 'created', description: 'Account onboarded' }],
+    ...data
+  };
+}
+
+@Injectable({ providedIn: 'root' })
 export class CompaniesService {
   private initialCompanies: Company[] = [
-    {
-      id: 1,
-      logo: 'https://ui-avatars.com/api/?name=Apex+Global&background=0D8ABC&color=fff',
+    createCompany(1, {
       name: 'Apex Global Systems',
-      legalName: 'Apex Global Systems Inc.',
-      registrationNumber: 'REG-2024-998',
-      taxId: 'US-99847291',
       industry: 'Information Technology',
-      website: 'www.apexglobal.com',
-      phone: '+1 (555) 234-5678',
-      email: 'contact@apexglobal.com',
-      supportEmail: 'support@apexglobal.com',
-      country: 'United States',
-      state: 'CA',
-      city: 'San Francisco',
-      zipCode: '94105',
-      streetAddress: '100 Market St Suite 300',
       employees: 450,
       companySize: 'Enterprise',
       annualRevenue: 12500000,
-      status: 'Active',
       priority: 'High',
-      source: 'Inbound Sales',
-      owner: 'Sarah Jenkins',
-      createdDate: '2026-01-10',
       tags: ['SaaS', 'High-Value', 'Priority'],
-      socials: { linkedin: 'https://linkedin.com/company/apex', twitter: 'https://x.com/apex' },
       rating: 5,
       contacts: [
-        { id: 1, name: 'John Smith', role: 'Chief Technology Officer', email: 'john@apexglobal.com', phone: '+1 555-0192' },
+        { id: 1, name: 'John Smith', role: 'CTO', email: 'john@apexglobal.com', phone: '+1 555-0192' },
         { id: 2, name: 'Elena Rostova', role: 'Head of Procurement', email: 'elena@apexglobal.com', phone: '+1 555-0194' }
       ],
       deals: [
         { id: 1, title: 'Enterprise License Renewal 2026', value: 150000, stage: 'Negotiation' },
         { id: 2, title: 'Cloud Migration Consultancy', value: 45000, stage: 'Closed Won' }
-      ],
-      documents: [
-        { id: 1, name: 'Master_Services_Agreement_2026.pdf', type: 'Contract', uploadedDate: '2026-01-12', size: '2.4 MB' }
-      ],
-      timeline: [
-        { id: 1, title: 'Deal Won', timestamp: '2026-02-14 10:30 AM', type: 'deal_won', description: 'Closed $45,000 Cloud Migration consultancy' },
-        { id: 2, title: 'Company Created', timestamp: '2026-01-10 09:00 AM', type: 'created', description: 'Account onboarded by Sarah Jenkins' }
       ]
-    },
-    {
-      id: 2,
-      logo: 'https://ui-avatars.com/api/?name=BrightTech&background=0D9488&color=fff',
+    }),
+    createCompany(2, {
       name: 'BrightTech Solutions',
-      legalName: 'BrightTech Solutions LLC',
-      registrationNumber: 'REG-2025-112',
-      taxId: 'US-88371920',
+      country: 'Canada', state: 'ON', city: 'Toronto',
       industry: 'Software & Cloud',
-      website: 'www.brighttech.io',
-      phone: '+1 (555) 987-6543',
-      email: 'hello@brighttech.io',
-      supportEmail: 'help@brighttech.io',
-      country: 'Canada',
-      state: 'ON',
-      city: 'Toronto',
-      zipCode: 'M5V 2T6',
-      streetAddress: '250 Front St W',
       employees: 35,
       companySize: 'SMB',
       annualRevenue: 2800000,
       status: 'Lead',
-      priority: 'Medium',
-      source: 'Webinar',
       owner: 'Alex Morgan',
-      createdDate: '2026-02-01',
-      tags: ['Cloud', 'Growth'],
-      socials: { linkedin: 'https://linkedin.com/company/brighttech' },
-      rating: 4,
-      contacts: [
-        { id: 3, name: 'David Chen', role: 'VP of Engineering', email: 'dchen@brighttech.io', phone: '+1 416-555-0112' }
-      ],
-      deals: [
-        { id: 3, title: 'Korvix CRM Integration', value: 28000, stage: 'Proposal' }
-      ],
-      documents: [],
-      timeline: [
-        { id: 3, title: 'New Contact Added', timestamp: '2026-02-02 02:15 PM', type: 'contact_added', description: 'David Chen added as primary contact' }
-      ]
-    }
+      contacts: [{ id: 3, name: 'David Chen', role: 'VP of Engineering', email: 'dchen@brighttech.io', phone: '+1 416-555-0112' }],
+      deals: [{ id: 3, title: 'Korvix CRM Integration', value: 28000, stage: 'Proposal' }]
+    }),
+    createCompany(3, {
+      name: 'Nexus Cybernetics',
+      industry: 'Cybersecurity',
+      employees: 120,
+      companySize: 'Mid-Market',
+      annualRevenue: 8500000,
+      priority: 'High',
+      tags: ['Security', 'SOC2'],
+      contacts: [{ id: 4, name: 'Sarah Connor', role: 'CISO', email: 'sconnor@nexus.com', phone: '+1 555-0341' }],
+      deals: [{ id: 4, title: 'Security Audit & Compliance', value: 65000, stage: 'Qualified' }]
+    }),
+    createCompany(4, {
+      name: 'Vanguard Logistics',
+      city: 'Chicago', state: 'IL',
+      industry: 'Transportation & Supply Chain',
+      employees: 800,
+      companySize: 'Enterprise',
+      annualRevenue: 34000000,
+      owner: 'Michael Scott',
+      tags: ['Logistics', 'Enterprise'],
+      deals: [{ id: 5, title: 'Fleet Tracking Software', value: 210000, stage: 'Negotiation' }]
+    }),
+    createCompany(5, {
+      name: 'Starlight Media',
+      city: 'Los Angeles', state: 'CA',
+      industry: 'Digital Marketing',
+      employees: 25,
+      companySize: 'SMB',
+      annualRevenue: 1500000,
+      status: 'Lead',
+      priority: 'Low',
+      tags: ['Marketing', 'Media']
+    }),
+    createCompany(6, {
+      name: 'Quantum BioLabs',
+      city: 'Boston', state: 'MA',
+      industry: 'Biotechnology',
+      employees: 210,
+      companySize: 'Mid-Market',
+      annualRevenue: 18000000,
+      priority: 'High',
+      contacts: [{ id: 5, name: 'Dr. Aris Thorne', role: 'Lead Researcher', email: 'athorne@quantumbio.com', phone: '+1 555-0988' }]
+    }),
+    createCompany(7, {
+      name: 'Horizon Financial',
+      city: 'New York', state: 'NY',
+      industry: 'Fintech',
+      employees: 600,
+      companySize: 'Enterprise',
+      annualRevenue: 45000000,
+      tags: ['Fintech', 'Finance'],
+      deals: [{ id: 6, title: 'Payment Gateway Integration', value: 180000, stage: 'Closed Won' }]
+    }),
+    createCompany(8, {
+      name: 'EcoGreen Dynamics',
+      city: 'Seattle', state: 'WA',
+      industry: 'Renewable Energy',
+      employees: 90,
+      companySize: 'Mid-Market',
+      annualRevenue: 6200000,
+      status: 'Inactive',
+      priority: 'Low'
+    }),
+    createCompany(9, {
+      name: 'Omni Retail Group',
+      city: 'Austin', state: 'TX',
+      industry: 'E-commerce',
+      employees: 320,
+      companySize: 'Mid-Market',
+      annualRevenue: 14000000,
+      deals: [{ id: 7, title: 'POS System Upgrade', value: 95000, stage: 'Proposal' }]
+    }),
+    createCompany(10, {
+      name: 'Elevate Cloud Solutions',
+      city: 'Denver', state: 'CO',
+      industry: 'Cloud Architecture',
+      employees: 45,
+      companySize: 'SMB',
+      annualRevenue: 3100000,
+      status: 'Active',
+      priority: 'Medium',
+      tags: ['Cloud', 'DevOps']
+    })
   ];
 
   private companiesSubject = new BehaviorSubject<Company[]>(this.initialCompanies);
-  companies$ = this.companiesSubject.asObservable();
+  companies$: Observable<Company[]> = this.companiesSubject.asObservable();
 
   getCompanies(): Company[] {
     return this.companiesSubject.value;
   }
 
   deleteCompanies(ids: number[]): void {
-    const updated = this.companiesSubject.value.filter(c => !ids.includes(c.id));
-    this.companiesSubject.next(updated);
+    this.companiesSubject.next(this.companiesSubject.value.filter(c => !ids.includes(c.id)));
   }
 }
