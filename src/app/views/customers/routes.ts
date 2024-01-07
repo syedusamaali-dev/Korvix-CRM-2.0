@@ -5,9 +5,9 @@ declare const $localize: any;
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./customers.component').then(m => m.CustomersComponent),
     data: {
-      title: $localize`Dashboard`
+      title: $localize`Customers`
     }
   }
 ];

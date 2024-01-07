@@ -1,1 +1,126 @@
-<p>customers works!</p>
+<div class="customers-container">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div>
+      <h2>Customers</h2>
+      <p class="subtitle">Manage and organize your client relationships with Korvix CRM.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="exportCSV()">
+        <i class="icon">📥</i> Export CSV
+      </button>
+      <button class="btn btn-primary">
+        <i class="icon">┼</i> Add Customer
+      </button>
+    </div>
+  </header>
+
+  <!-- Controls Bar: Search, Filter, Bulk Actions -->
+  <section class="controls-card">
+    <div class="search-filter-group">
+      <!-- Search Input -->
+      <div class="search-box">
+        <input 
+          type="text" 
+          placeholder="Search name, email, company..." 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="applyFilters()" 
+        />
+      </div>
+
+      <!-- Status Filter -->
+      <div class="filter-box">
+        <select [(ngModel)]="selectedStatus" (change)="applyFilters()">
+          <option value="All">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Lead">Lead</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="bulk-actions" *ngIf="selectedIds.size > 0">
+      <span class="selected-count">{{ selectedIds.size }} Selected</span>
+      <button class="btn btn-danger-sm" (click)="deleteSelected()">
+        Delete Selected
+      </button>
+    </div>
+  </section>
+
+  <!-- Responsive Data Table -->
+  <div class="table-responsive">
+    <table class="crm-table">
+      <thead>
+        <tr>
+          <th class="checkbox-col">
+            <input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()" />
+          </th>
+          <th (click)="sortBy('name')" class="sortable">
+            Customer Name 
+            <span class="sort-icon" *ngIf="sortColumn === 'name'">{{ sortAscending ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('company')" class="sortable">
+            Company
+            <span class="sort-icon" *ngIf="sortColumn === 'company'">{{ sortAscending ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('status')" class="sortable">
+            Status
+            <span class="sort-icon" *ngIf="sortColumn === 'status'">{{ sortAscending ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('value')" class="sortable">
+            Value
+            <span class="sort-icon" *ngIf="sortColumn === 'value'">{{ sortAscending ? '▲' : '▼' }}</span>
+          </th>
+          <th (click)="sortBy('createdDate')" class="sortable">
+            Created Date
+            <span class="sort-icon" *ngIf="sortColumn === 'createdDate'">{{ sortAscending ? '▲' : '▼' }}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of paginatedCustomers" [class.selected-row]="selectedIds.has(customer.id)">
+          <td class="checkbox-col">
+            <input type="checkbox" [checked]="selectedIds.has(customer.id)" (change)="toggleSelect(customer.id)" />
+          </td>
+          <td>
+            <div class="customer-info">
+              <span class="customer-name">{{ customer.name }}</span>
+              <span class="customer-email">{{ customer.email }}</span>
+            </div>
+          </td>
+          <td>{{ customer.company }}</td>
+          <td>
+            <span class="badge" [ngClass]="customer.status.toLowerCase()">
+              {{ customer.status }}
+            </span>
+          </td>
+          <td>{{ customer.value | currency:'USD':'symbol':'1.0-0' }}</td>
+          <td>{{ customer.createdDate }}</td>
+        </tr>
+        <tr *ngIf="paginatedCustomers.length === 0">
+          <td colspan="6" class="no-data">No customers found matching your criteria.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <footer class="pagination-footer">
+    <div class="page-size-selector">
+      <label>Show </label>
+      <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="25">25</option>
+      </select>
+      <span>entries</span>
+    </div>
+
+    <div class="pagination-controls">
+      <button class="btn-page" [disabled]="currentPage === 1" (click)="setPage(currentPage - 1)">Previous</button>
+      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button class="btn-page" [disabled]="currentPage === totalPages" (click)="setPage(currentPage + 1)">Next</button>
+    </div>
+  </footer>
+</div>
