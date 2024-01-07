@@ -1,1 +1,239 @@
-<p>companies works!</p>
+<div class="companies-module">
+  <!-- LIST VIEW -->
+  <ng-container *ngIf="!selectedCompany">
+    <!-- Header -->
+    <header class="page-header">
+      <div>
+        <h2>Companies</h2>
+        <p class="subtitle">Manage organizational relationships, accounts, and deal pipelines.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="exportCSV()">📥 Export CSV</button>
+        <button class="btn btn-primary">┼ Add Company</button>
+      </div>
+    </header>
+
+    <!-- KPI Cards Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-title">Total Companies</span>
+        <span class="kpi-value">{{ totalCompanies }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Active Accounts</span>
+        <span class="kpi-value badge-active">{{ activeCompanies }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Enterprise</span>
+        <span class="kpi-value">{{ enterpriseCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">SMBs</span>
+        <span class="kpi-value">{{ smbCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Monthly Growth</span>
+        <span class="kpi-value text-success">+14% ↑</span>
+      </div>
+    </section>
+
+    <!-- Filters Bar -->
+    <section class="controls-card">
+      <div class="filters-wrapper">
+        <input type="text" placeholder="Search company name, industry..." [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" class="form-input search-input" />
+        
+        <select [(ngModel)]="selectedIndustry" (change)="applyFilters()" class="form-input">
+          <option value="All">All Industries</option>
+          <option value="Information Technology">Information Technology</option>
+          <option value="Software & Cloud">Software & Cloud</option>
+        </select>
+
+        <select [(ngModel)]="selectedStatus" (change)="applyFilters()" class="form-input">
+          <option value="All">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Lead">Lead</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+
+        <select [(ngModel)]="selectedSize" (change)="applyFilters()" class="form-input">
+          <option value="All">All Sizes</option>
+          <option value="SMB">SMB</option>
+          <option value="Mid-Market">Mid-Market</option>
+          <option value="Enterprise">Enterprise</option>
+        </select>
+      </div>
+
+      <div class="bulk-actions" *ngIf="selectedIds.size > 0">
+        <span>{{ selectedIds.size }} selected</span>
+        <button class="btn btn-danger-sm" (click)="deleteSelected()">Delete Selected</button>
+      </div>
+    </section>
+
+    <!-- Responsive Table -->
+    <div class="table-responsive">
+      <table class="crm-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col"><input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()" /></th>
+            <th>Logo</th>
+            <th (click)="sortBy('name')" class="sortable">Company Name</th>
+            <th (click)="sortBy('industry')" class="sortable">Industry</th>
+            <th>Website</th>
+            <th>Phone</th>
+            <th>Country</th>
+            <th (click)="sortBy('companySize')" class="sortable">Size</th>
+            <th (click)="sortBy('status')" class="sortable">Status</th>
+            <th>Owner</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let company of paginatedCompanies" [class.selected-row]="selectedIds.has(company.id)">
+            <td class="checkbox-col"><input type="checkbox" [checked]="selectedIds.has(company.id)" (change)="toggleSelect(company.id)" /></td>
+            <td><img [src]="company.logo" class="company-logo-img" [alt]="company.name" /></td>
+            <td class="font-bold text-link" (click)="openDetails(company)">{{ company.name }}</td>
+            <td>{{ company.industry }}</td>
+            <td><a [href]="'https://' + company.website" target="_blank" class="link-url">{{ company.website }}</a></td>
+            <td>{{ company.phone }}</td>
+            <td>{{ company.country }}</td>
+            <td><span class="badge size-badge">{{ company.companySize }}</span></td>
+            <td><span class="badge" [ngClass]="company.status.toLowerCase()">{{ company.status }}</span></td>
+            <td>{{ company.owner }}</td>
+            <td>
+              <button class="btn-icon" (click)="openDetails(company)" title="View Details">👁</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <footer class="pagination-footer">
+      <div>Showing page {{ currentPage }} of {{ totalPages }}</div>
+      <div class="pagination-controls">
+        <button class="btn-page" [disabled]="currentPage === 1" (click)="setPage(currentPage - 1)">Previous</button>
+        <button class="btn-page" [disabled]="currentPage === totalPages" (click)="setPage(currentPage + 1)">Next</button>
+      </div>
+    </footer>
+  </ng-container>
+
+  <!-- Part 3: COMPANY DETAILS VIEW -->
+  <ng-container *ngIf="selectedCompany">
+    <button class="btn btn-secondary back-btn" (click)="closeDetails()">← Back to Companies</button>
+    
+    <!-- Header Hero Block -->
+    <section class="detail-header-card">
+      <div class="detail-profile">
+        <img [src]="selectedCompany.logo" class="detail-logo" [alt]="selectedCompany.name" />
+        <div>
+          <div class="title-rating-row">
+            <h2>{{ selectedCompany.name }}</h2>
+            <span class="rating">★ {{ selectedCompany.rating }}.0</span>
+            <span class="badge size-badge">{{ selectedCompany.companySize }} Account</span>
+          </div>
+          <p class="subtitle">{{ selectedCompany.industry }} • {{ selectedCompany.city }}, {{ selectedCompany.country }}</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="btn btn-secondary">✏ Edit</button>
+        <button class="btn btn-secondary">+ Contact</button>
+        <button class="btn btn-secondary">+ Deal</button>
+        <button class="btn btn-primary">📅 Schedule Meeting</button>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="detail-tabs">
+      <button [class.active]="activeDetailTab === 'overview'" (click)="activeDetailTab = 'overview'">Overview</button>
+      <button [class.active]="activeDetailTab === 'contacts'" (click)="activeDetailTab = 'contacts'">Contacts ({{ selectedCompany.contacts.length }})</button>
+      <button [class.active]="activeDetailTab === 'deals'" (click)="activeDetailTab = 'deals'">Deals ({{ selectedCompany.deals.length }})</button>
+      <button [class.active]="activeDetailTab === 'documents'" (click)="activeDetailTab = 'documents'">Documents ({{ selectedCompany.documents.length }})</button>
+      <button [class.active]="activeDetailTab === 'timeline'" (click)="activeDetailTab = 'timeline'">Activity Timeline</button>
+    </nav>
+
+    <!-- Tab Panels -->
+    <div class="tab-content-card">
+      <!-- OVERVIEW TAB -->
+      <div *ngIf="activeDetailTab === 'overview'" class="overview-grid">
+        <div class="info-block">
+          <h3>Basic Information</h3>
+          <p><strong>Legal Name:</strong> {{ selectedCompany.legalName }}</p>
+          <p><strong>Reg Number:</strong> {{ selectedCompany.registrationNumber }}</p>
+          <p><strong>Tax ID:</strong> {{ selectedCompany.taxId }}</p>
+          <p><strong>Employees:</strong> {{ selectedCompany.employees }}</p>
+        </div>
+        <div class="info-block">
+          <h3>Contact Details</h3>
+          <p><strong>Email:</strong> {{ selectedCompany.email }}</p>
+          <p><strong>Phone:</strong> {{ selectedCompany.phone }}</p>
+          <p><strong>Address:</strong> {{ selectedCompany.streetAddress }}, {{ selectedCompany.city }}, {{ selectedCompany.state }}</p>
+        </div>
+        <div class="info-block">
+          <h3>CRM Meta</h3>
+          <p><strong>Account Owner:</strong> {{ selectedCompany.owner }}</p>
+          <p><strong>Annual Revenue:</strong> {{ selectedCompany.annualRevenue | currency:'USD':'symbol':'1.0-0' }}</p>
+          <p><strong>Lead Source:</strong> {{ selectedCompany.source }}</p>
+        </div>
+      </div>
+
+      <!-- CONTACTS TAB -->
+      <div *ngIf="activeDetailTab === 'contacts'">
+        <table class="crm-table">
+          <thead>
+            <tr><th>Name</th><th>Role</th><th>Email</th><th>Phone</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let contact of selectedCompany.contacts">
+              <td class="font-bold">{{ contact.name }}</td>
+              <td>{{ contact.role }}</td>
+              <td>{{ contact.email }}</td>
+              <td>{{ contact.phone }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- DEALS TAB -->
+      <div *ngIf="activeDetailTab === 'deals'">
+        <table class="crm-table">
+          <thead>
+            <tr><th>Deal Title</th><th>Value</th><th>Stage</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let deal of selectedCompany.deals">
+              <td class="font-bold">{{ deal.title }}</td>
+              <td>{{ deal.value | currency:'USD':'symbol':'1.0-0' }}</td>
+              <td><span class="badge active">{{ deal.stage }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- DOCUMENTS TAB -->
+      <div *ngIf="activeDetailTab === 'documents'">
+        <div class="doc-item" *ngFor="let doc of selectedCompany.documents">
+          <div class="doc-icon">📄</div>
+          <div>
+            <div class="font-bold">{{ doc.name }}</div>
+            <span class="subtitle">{{ doc.type }} • {{ doc.size }} • Uploaded on {{ doc.uploadedDate }}</span>
+          </div>
+        </div>
+        <p *ngIf="selectedCompany.documents.length === 0" class="subtitle">No documents attached.</p>
+      </div>
+
+      <!-- TIMELINE TAB -->
+      <div *ngIf="activeDetailTab === 'timeline'" class="timeline-list">
+        <div class="timeline-item" *ngFor="let item of selectedCompany.timeline">
+          <div class="timeline-marker"></div>
+          <div class="timeline-body">
+            <span class="timeline-time">{{ item.timestamp }}</span>
+            <div class="font-bold">{{ item.title }}</div>
+            <p>{{ item.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
