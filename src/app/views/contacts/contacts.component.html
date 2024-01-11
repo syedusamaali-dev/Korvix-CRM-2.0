@@ -1,1 +1,476 @@
-<p>contacts works!</p>
+<div class="contacts-module">
+  <!-- MAIN LIST & CARD VIEW -->
+  <ng-container *ngIf="!selectedContact">
+    <!-- Header -->
+    <header class="page-header">
+      <div>
+        <h2>Contacts</h2>
+        <p class="subtitle">
+          Individual people and decision-makers connected to your CRM accounts.
+        </p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="exportCSV()">
+          📥 Export CSV
+        </button>
+        <button class="btn btn-primary" (click)="showAddModal = true">
+          ┼ Add Contact
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-title">Total Contacts</span>
+        <span class="kpi-value">{{ totalContacts }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Active Contacts</span>
+        <span class="kpi-value active-text">{{ activeContacts }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">VIP Contacts</span>
+        <span class="kpi-value vip-text">{{ vipContacts }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">New This Month</span>
+        <span class="kpi-value text-success">+8 ↑</span>
+      </div>
+    </section>
+
+    <!-- Controls Bar -->
+    <section class="controls-card">
+      <div class="filters-wrapper">
+        <input
+          type="text"
+          placeholder="Search contact name, email, company..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+          class="form-input search-input"
+        />
+
+        <select
+          [(ngModel)]="selectedStatus"
+          (change)="applyFilters()"
+          class="form-input"
+        >
+          <option value="All">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+
+        <select
+          [(ngModel)]="selectedTag"
+          (change)="applyFilters()"
+          class="form-input"
+        >
+          <option value="All">All Tags</option>
+          <option value="VIP">VIP</option>
+          <option value="Decision Maker">Decision Maker</option>
+          <option value="Prospect">Prospect</option>
+          <option value="Client">Client</option>
+        </select>
+      </div>
+
+      <div class="view-and-bulk">
+        <div class="bulk-actions" *ngIf="selectedIds.size > 0">
+          <span>{{ selectedIds.size }} selected</span>
+          <button class="btn btn-danger-sm" (click)="deleteSelected()">
+            Delete Selected
+          </button>
+        </div>
+
+        <!-- View Switcher -->
+        <div class="view-switcher">
+          <button
+            [class.active]="viewMode === 'table'"
+            (click)="viewMode = 'table'"
+          >
+            📋 Table
+          </button>
+          <button
+            [class.active]="viewMode === 'card'"
+            (click)="viewMode = 'card'"
+          >
+            🎴 Cards
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLE VIEW -->
+    <div class="table-responsive" *ngIf="viewMode === 'table'">
+      <table class="crm-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col">
+              <input
+                type="checkbox"
+                [checked]="selectAll"
+                (change)="toggleSelectAll()"
+              />
+            </th>
+            <th>★</th>
+            <th>Contact</th>
+            <th (click)="sortBy('jobTitle')" class="sortable">Job Title</th>
+            <th (click)="sortBy('companyName')" class="sortable">Company</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Owner</th>
+            <th>Tags</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let contact of paginatedContacts"
+            [class.selected-row]="selectedIds.has(contact.id)"
+          >
+            <td class="checkbox-col">
+              <input
+                type="checkbox"
+                [checked]="selectedIds.has(contact.id)"
+                (change)="toggleSelect(contact.id)"
+              />
+            </td>
+            <td>
+              <span
+                class="star-icon"
+                [class.favorite]="contact.isFavorite"
+                (click)="toggleFavorite(contact.id, $event)"
+              >
+                {{ contact.isFavorite ? "★" : "☆" }}
+              </span>
+            </td>
+            <td>
+              <div class="contact-user-info" (click)="openDetails(contact)">
+                <img
+                  [src]="contact.avatar"
+                  class="user-avatar"
+                  [alt]="contact.firstName"
+                />
+                <div>
+                  <div class="user-name">
+                    {{ contact.firstName }} {{ contact.lastName }}
+                  </div>
+                  <div class="user-email">{{ contact.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ contact.jobTitle }}</td>
+            <td class="company-link">{{ contact.companyName }}</td>
+            <td>{{ contact.phone }}</td>
+            <td>
+              <span class="badge" [ngClass]="contact.status.toLowerCase()">{{
+                contact.status
+              }}</span>
+            </td>
+            <td>{{ contact.owner }}</td>
+            <td>
+              <div class="tag-group">
+                <span *ngFor="let tag of contact.tags" class="tag-badge">{{
+                  tag
+                }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a
+                  [href]="'tel:' + contact.phone"
+                  class="btn-icon-link"
+                  title="Call"
+                  >📞</a
+                >
+                <a
+                  [href]="'mailto:' + contact.email"
+                  class="btn-icon-link"
+                  title="Email"
+                  >✉</a
+                >
+                <button
+                  class="btn-icon"
+                  (click)="openDetails(contact)"
+                  title="View Details"
+                >
+                  👁
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CARD VIEW -->
+    <div class="cards-grid" *ngIf="viewMode === 'card'">
+      <div
+        class="contact-card"
+        *ngFor="let contact of paginatedContacts"
+        (click)="openDetails(contact)"
+      >
+        <div class="card-header">
+          <span
+            class="star-icon"
+            [class.favorite]="contact.isFavorite"
+            (click)="toggleFavorite(contact.id, $event)"
+          >
+            {{ contact.isFavorite ? "★" : "☆" }}
+          </span>
+          <span class="badge" [ngClass]="contact.status.toLowerCase()">{{
+            contact.status
+          }}</span>
+        </div>
+        <div class="card-body">
+          <img
+            [src]="contact.avatar"
+            class="card-avatar"
+            [alt]="contact.firstName"
+          />
+          <h3 class="card-title">
+            {{ contact.firstName }} {{ contact.lastName }}
+          </h3>
+          <p class="card-subtitle">
+            {{ contact.jobTitle }} at <strong>{{ contact.companyName }}</strong>
+          </p>
+          <p class="card-contact-info">✉ {{ contact.email }}</p>
+          <p class="card-contact-info">📞 {{ contact.phone }}</p>
+        </div>
+        <div class="card-footer" (click)="$event.stopPropagation()">
+          <div class="tag-group">
+            <span *ngFor="let tag of contact.tags" class="tag-badge">{{
+              tag
+            }}</span>
+          </div>
+          <div class="quick-links">
+            <a [href]="'tel:' + contact.phone" class="btn-icon-link">📞</a>
+            <a [href]="'mailto:' + contact.email" class="btn-icon-link">✉</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <footer class="pagination-footer">
+      <div>Showing page {{ currentPage }} of {{ totalPages }}</div>
+      <div class="pagination-controls">
+        <button
+          class="btn-page"
+          [disabled]="currentPage === 1"
+          (click)="setPage(currentPage - 1)"
+        >
+          Previous
+        </button>
+        <button
+          class="btn-page"
+          [disabled]="currentPage === totalPages"
+          (click)="setPage(currentPage + 1)"
+        >
+          Next
+        </button>
+      </div>
+    </footer>
+  </ng-container>
+
+  <!-- CONTACT DETAILS VIEW -->
+  <ng-container *ngIf="selectedContact">
+    <button class="btn btn-secondary back-btn" (click)="closeDetails()">
+      ← Back to Contacts
+    </button>
+
+    <section class="detail-header-card">
+      <div class="detail-profile">
+        <img
+          [src]="selectedContact.avatar"
+          class="detail-avatar"
+          [alt]="selectedContact.firstName"
+        />
+        <div>
+          <div class="title-rating-row">
+            <h2>
+              {{ selectedContact.firstName }} {{ selectedContact.lastName }}
+            </h2>
+            <span
+              class="star-icon favorite"
+              (click)="toggleFavorite(selectedContact.id, $event)"
+            >
+              {{ selectedContact.isFavorite ? "★" : "☆" }}
+            </span>
+          </div>
+          <p class="subtitle">
+            {{ selectedContact.jobTitle }} at
+            <strong>{{ selectedContact.companyName }}</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <a [href]="'tel:' + selectedContact.phone" class="btn btn-secondary"
+          >📞 Call</a
+        >
+        <a [href]="'mailto:' + selectedContact.email" class="btn btn-secondary"
+          >✉ Email</a
+        >
+        <button class="btn btn-primary">📅 Schedule Meeting</button>
+      </div>
+    </section>
+
+    <!-- Details Tabs -->
+    <nav class="detail-tabs">
+      <button
+        [class.active]="activeDetailTab === 'overview'"
+        (click)="activeDetailTab = 'overview'"
+      >
+        Overview
+      </button>
+      <button
+        [class.active]="activeDetailTab === 'timeline'"
+        (click)="activeDetailTab = 'timeline'"
+      >
+        Timeline
+      </button>
+      <button
+        [class.active]="activeDetailTab === 'notes'"
+        (click)="activeDetailTab = 'notes'"
+      >
+        Notes
+      </button>
+      <button
+        [class.active]="activeDetailTab === 'tasks'"
+        (click)="activeDetailTab = 'tasks'"
+      >
+        Tasks
+      </button>
+      <button
+        [class.active]="activeDetailTab === 'deals'"
+        (click)="activeDetailTab = 'deals'"
+      >
+        Deals
+      </button>
+    </nav>
+
+    <!-- Tab Panels -->
+    <div class="tab-content-card">
+      <!-- OVERVIEW -->
+      <div *ngIf="activeDetailTab === 'overview'" class="overview-grid">
+        <div class="info-block">
+          <h3>Personal Details</h3>
+          <p><strong>Email:</strong> {{ selectedContact.email }}</p>
+          <p><strong>Phone:</strong> {{ selectedContact.phone }}</p>
+          <p><strong>Owner:</strong> {{ selectedContact.owner }}</p>
+        </div>
+        <div class="info-block">
+          <h3>Company & Address</h3>
+          <p><strong>Company:</strong> {{ selectedContact.companyName }}</p>
+          <p>
+            <strong>Street:</strong>
+            {{ selectedContact.address?.street || "N/A" }}
+          </p>
+          <p>
+            <strong>City/Country:</strong> {{ selectedContact.address?.city }},
+            {{ selectedContact.address?.country }}
+          </p>
+        </div>
+      </div>
+
+      <!-- TIMELINE -->
+      <div *ngIf="activeDetailTab === 'timeline'" class="timeline-list">
+        <div class="timeline-item" *ngFor="let act of selectedContact.timeline">
+          <span class="timeline-time">{{ act.timestamp }}</span>
+          <div class="font-bold">{{ act.title }}</div>
+          <p>{{ act.description }}</p>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div *ngIf="activeDetailTab === 'notes'">
+        <ul>
+          <li *ngFor="let note of selectedContact.notes">{{ note }}</li>
+        </ul>
+      </div>
+
+      <!-- TASKS -->
+      <div *ngIf="activeDetailTab === 'tasks'">
+        <div *ngFor="let task of selectedContact.tasks" class="task-row">
+          <span>✔ {{ task.title }}</span>
+          <span class="subtitle">Due: {{ task.dueDate }}</span>
+        </div>
+      </div>
+
+      <!-- DEALS -->
+      <div *ngIf="activeDetailTab === 'deals'">
+        <table class="crm-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Value</th>
+              <th>Stage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let deal of selectedContact.deals">
+              <td>{{ deal.title }}</td>
+              <td>{{ deal.value | currency: "USD" : "symbol" : "1.0-0" }}</td>
+              <td>
+                <span class="badge active">{{ deal.stage }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ADD CONTACT MODAL -->
+  <div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal-card">
+      <h3>Add New Contact</h3>
+      <div class="modal-form">
+        <input
+          type="text"
+          placeholder="First Name"
+          [(ngModel)]="newContact.firstName"
+          class="form-input"
+        />
+        <input
+          type="text"
+          placeholder="Last Name"
+          [(ngModel)]="newContact.lastName"
+          class="form-input"
+        />
+        <input
+          type="email"
+          placeholder="Email Address"
+          [(ngModel)]="newContact.email"
+          class="form-input"
+        />
+        <input
+          type="text"
+          placeholder="Phone Number"
+          [(ngModel)]="newContact.phone"
+          class="form-input"
+        />
+        <input
+          type="text"
+          placeholder="Job Title"
+          [(ngModel)]="newContact.jobTitle"
+          class="form-input"
+        />
+        <input
+          type="text"
+          placeholder="Company Name"
+          [(ngModel)]="newContact.companyName"
+          class="form-input"
+        />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="showAddModal = false">
+          Cancel
+        </button>
+        <button class="btn btn-primary" (click)="saveContact()">
+          Save Contact
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

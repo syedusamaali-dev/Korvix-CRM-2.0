@@ -5,10 +5,10 @@ declare const $localize: any;
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./customers.component').then(m => m.CustomersComponent),
+    loadComponent: () =>
+      import('./customers.component').then((m) => m.CustomersComponent),
     data: {
-      title: $localize`Customers`
-    }
-  }
+      title: $localize`Customers`,
+    },
+  },
 ];
-
