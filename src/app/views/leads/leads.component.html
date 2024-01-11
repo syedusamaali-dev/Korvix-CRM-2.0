@@ -1,1 +1,275 @@
-<p>leads works!</p>
+<div class="leads-module">
+  <!-- MAIN LEADS VIEW -->
+  <ng-container *ngIf="!selectedLead">
+    <!-- Header -->
+    <header class="page-header">
+      <div>
+        <h2>Leads</h2>
+        <p class="subtitle">Capture, score, and qualify top-of-funnel prospects before converting them to Deals.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="exportCSV()">📥 Export CSV</button>
+        <button class="btn btn-primary" (click)="showAddModal = true">┼ Create Lead</button>
+      </div>
+    </header>
+
+    <!-- KPI Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-title">Total Leads</span>
+        <span class="kpi-value">{{ totalLeadsCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">New Leads</span>
+        <span class="kpi-value info-text">{{ newLeadsCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Qualified Leads</span>
+        <span class="kpi-value success-text">{{ qualifiedLeadsCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Qualification Rate</span>
+        <span class="kpi-value text-primary">{{ conversionRate }}%</span>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <section class="controls-card">
+      <div class="filters-wrapper">
+        <input type="text" placeholder="Search name, company, email..." [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" class="form-input search-input" />
+
+        <select [(ngModel)]="selectedStatusFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Statuses</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+
+        <select [(ngModel)]="selectedSourceFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Sources</option>
+          <option *ngFor="let src of sources" [value]="src">{{ src }}</option>
+        </select>
+      </div>
+
+      <div class="view-and-bulk">
+        <div class="bulk-actions" *ngIf="selectedIds.size > 0">
+          <span>{{ selectedIds.size }} selected</span>
+          <button class="btn btn-danger-sm" (click)="deleteSelected()">Delete Selected</button>
+        </div>
+
+        <div class="view-switcher">
+          <button [class.active]="viewMode === 'board'" (click)="viewMode = 'board'">📊 Status Board</button>
+          <button [class.active]="viewMode === 'table'" (click)="viewMode = 'table'">📋 Table View</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. STATUS BOARD VIEW (Kanban / Drag and Drop) -->
+    <div class="board-container" *ngIf="viewMode === 'board'">
+      <div 
+        class="board-column" 
+        *ngFor="let status of statuses"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop($event, status)"
+      >
+        <div class="column-header" [ngClass]="status.toLowerCase()">
+          <div class="column-title">
+            <h3>{{ status }}</h3>
+            <span class="lead-count">{{ getLeadsByStatus(status).length }}</span>
+          </div>
+        </div>
+
+        <div class="column-body">
+          <div 
+            class="lead-card" 
+            *ngFor="let lead of getLeadsByStatus(status)"
+            draggable="true"
+            (dragstart)="onDragStart($event, lead.id)"
+            (click)="openDetails(lead)"
+          >
+            <div class="card-top">
+              <span class="source-tag">{{ lead.source }}</span>
+              <span class="score-badge">Score: {{ lead.score }}</span>
+            </div>
+
+            <h4 class="lead-name">{{ lead.firstName }} {{ lead.lastName }}</h4>
+            <div class="lead-company">{{ lead.jobTitle }} at <strong>{{ lead.companyName }}</strong></div>
+
+            <div class="rating-stars">
+              <span *ngFor="let i of [1,2,3,4,5]" [class.filled]="i <= lead.rating">★</span>
+            </div>
+
+            <div class="card-bottom">
+              <span class="lead-owner">👤 {{ lead.owner }}</span>
+              <button *ngIf="lead.status !== 'Qualified'" class="btn-convert-sm" (click)="openConvertModal(lead, $event)">Convert ⚡</button>
+            </div>
+          </div>
+
+          <div class="empty-placeholder" *ngIf="getLeadsByStatus(status).length === 0">
+            Drag lead here
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. TABLE VIEW -->
+    <div class="table-responsive" *ngIf="viewMode === 'table'">
+      <table class="crm-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col"><input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()" /></th>
+            <th (click)="sortBy('firstName')" class="sortable">Lead Name</th>
+            <th (click)="sortBy('companyName')" class="sortable">Company</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Source</th>
+            <th>Rating</th>
+            <th>Lead Score</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let lead of filteredLeads" [class.selected-row]="selectedIds.has(lead.id)">
+            <td class="checkbox-col"><input type="checkbox" [checked]="selectedIds.has(lead.id)" (change)="toggleSelect(lead.id)" /></td>
+            <td class="font-bold text-link" (click)="openDetails(lead)">{{ lead.firstName }} {{ lead.lastName }}</td>
+            <td>{{ lead.companyName }}</td>
+            <td>{{ lead.email }}</td>
+            <td>{{ lead.phone }}</td>
+            <td><span class="badge" [ngClass]="lead.status.toLowerCase()">{{ lead.status }}</span></td>
+            <td>{{ lead.source }}</td>
+            <td>
+              <span class="rating-stars inline">
+                <span *ngFor="let i of [1,2,3,4,5]" [class.filled]="i <= lead.rating">★</span>
+              </span>
+            </td>
+            <td><strong class="score-num">{{ lead.score }}</strong>/100</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon" (click)="openDetails(lead)" title="View Details">👁</button>
+                <button *ngIf="lead.status !== 'Qualified'" class="btn-convert-xs" (click)="openConvertModal(lead, $event)" title="Convert to Deal & Contact">⚡ Convert</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+  <!-- LEAD DETAILS VIEW -->
+  <ng-container *ngIf="selectedLead">
+    <button class="btn btn-secondary back-btn" (click)="closeDetails()">← Back to Leads</button>
+
+    <section class="detail-header-card">
+      <div class="detail-profile">
+        <div>
+          <div class="title-rating-row">
+            2026 <h2>{{ selectedLead.firstName }} {{ selectedLead.lastName }}</h2>
+            <span class="badge" [ngClass]="selectedLead.status.toLowerCase()">{{ selectedLead.status }}</span>
+          </div>
+          <p class="subtitle">{{ selectedLead.jobTitle }} at <strong>{{ selectedLead.companyName }}</strong></p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <a [href]="'tel:' + selectedLead.phone" class="btn btn-secondary">📞 Call Lead</a>
+        <a [href]="'mailto:' + selectedLead.email" class="btn btn-secondary">✉ Email</a>
+        <button *ngIf="selectedLead.status !== 'Qualified'" class="btn btn-primary" (click)="openConvertModal(selectedLead, $event)">⚡ Convert Lead</button>
+      </div>
+    </section>
+
+    <!-- Detail Navigation Tabs -->
+    <nav class="detail-tabs">
+      <button [class.active]="activeDetailTab === 'overview'" (click)="activeDetailTab = 'overview'">Overview</button>
+      <button [class.active]="activeDetailTab === 'tasks'" (click)="activeDetailTab = 'tasks'">Tasks ({{ selectedLead.tasks.length }})</button>
+      <button [class.active]="activeDetailTab === 'notes'" (click)="activeDetailTab = 'notes'">Notes ({{ selectedLead.notes.length }})</button>
+      <button [class.active]="activeDetailTab === 'timeline'" (click)="activeDetailTab = 'timeline'">Timeline</button>
+    </nav>
+
+    <!-- Detail Tab Content -->
+    <div class="tab-content-card">
+      <div *ngIf="activeDetailTab === 'overview'" class="overview-grid">
+        <div class="info-block">
+          <h3>Lead Details</h3>
+          <p><strong>Email:</strong> {{ selectedLead.email }}</p>
+          <p><strong>Phone:</strong> {{ selectedLead.phone }}</p>
+          <p><strong>Source:</strong> {{ selectedLead.source }}</p>
+          <p><strong>Owner:</strong> {{ selectedLead.owner }}</p>
+        </div>
+        <div class="info-block">
+          <h3>Lead Intelligence</h3>
+          <p><strong>Lead Score:</strong> {{ selectedLead.score }} / 100</p>
+          <p><strong>Rating:</strong> {{ selectedLead.rating }} / 5 Stars</p>
+          <p><strong>Last Activity:</strong> {{ selectedLead.lastActivity }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="activeDetailTab === 'tasks'">
+        <div *ngFor="let task of selectedLead.tasks" class="task-item">
+          <input type="checkbox" [checked]="task.isCompleted" />
+          <span>{{ task.title }}</span>
+          <span class="subtitle">Due: {{ task.dueDate }}</span>
+        </div>
+        <p *ngIf="selectedLead.tasks.length === 0" class="subtitle">No pending tasks for this lead.</p>
+      </div>
+
+      <div *ngIf="activeDetailTab === 'notes'">
+        <ul>
+          <li *ngFor="let note of selectedLead.notes">{{ note }}</li>
+        </ul>
+        <p *ngIf="selectedLead.notes.length === 0" class="subtitle">No notes added.</p>
+      </div>
+
+      <div *ngIf="activeDetailTab === 'timeline'" class="timeline-list">
+        <div class="timeline-item" *ngFor="let act of selectedLead.timeline">
+          <span class="timeline-time">{{ act.timestamp }}</span>
+          <div class="font-bold">{{ act.title }}</div>
+          <p>{{ act.description }}</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- CREATE LEAD MODAL -->
+  <div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal-card">
+      <h3>Create New Lead</h3>
+      <div class="modal-form">
+        <input type="text" placeholder="First Name" [(ngModel)]="newLead.firstName" class="form-input" />
+        <input type="text" placeholder="Last Name" [(ngModel)]="newLead.lastName" class="form-input" />
+        <input type="text" placeholder="Company Name" [(ngModel)]="newLead.companyName" class="form-input" />
+        <input type="text" placeholder="Job Title" [(ngModel)]="newLead.jobTitle" class="form-input" />
+        <input type="email" placeholder="Email Address" [(ngModel)]="newLead.email" class="form-input" />
+        <input type="text" placeholder="Phone Number" [(ngModel)]="newLead.phone" class="form-input" />
+        
+        <select [(ngModel)]="newLead.source" class="form-input">
+          <option *ngFor="let src of sources" [value]="src">{{ src }}</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="showAddModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="saveLead()">Save Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONVERT LEAD DIALOG MODAL -->
+  <div class="modal-backdrop" *ngIf="showConvertModal">
+    <div class="modal-card">
+      <h3>⚡ Convert Lead to Contact & Deal</h3>
+      <p class="subtitle">This will qualify {{ leadToConvert?.firstName }} {{ leadToConvert?.lastName }} and create linked records:</p>
+      <div class="modal-form">
+        <label class="form-label">Associated Contact Name:</label>
+        <input type="text" [value]="leadToConvert?.firstName + ' ' + leadToConvert?.lastName" disabled class="form-input disabled" />
+
+        <label class="form-label">New Opportunity / Deal Title:</label>
+        <input type="text" [(ngModel)]="dealTitleForConversion" class="form-input" />
+
+        <label class="form-label">Estimated Deal Value ($):</label>
+        <input type="number" [(ngModel)]="dealValueForConversion" class="form-input" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="showConvertModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="confirmConversion()">Convert Lead Now</button>
+      </div>
+    </div>
+  </div>
+</div>

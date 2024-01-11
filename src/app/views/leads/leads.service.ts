@@ -1,148 +1,157 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-export type DealStage = 'Prospecting' | 'Proposal' | 'Negotiation' | 'Closed Won' | 'Closed Lost';
-export type DealPriority = 'High' | 'Medium' | 'Low';
+export type LeadStatus = 'New' | 'Contacted' | 'Qualified' | 'Unqualified';
+export type LeadSource = 'Website' | 'LinkedIn' | 'Cold Outreach' | 'Referral' | 'Trade Show';
 
-export interface DealTask {
+export interface LeadTask {
   id: number;
   title: string;
   dueDate: string;
   isCompleted: boolean;
 }
 
-export interface DealDocument {
-  id: number;
-  name: string;
-  size: string;
-  uploadedAt: string;
-}
-
-export interface DealActivity {
+export interface LeadActivity {
   id: number;
   title: string;
   description: string;
   timestamp: string;
-  type: 'stage_change' | 'note' | 'task' | 'email';
+  type: 'email' | 'call' | 'status_change';
 }
 
-export interface Deal {
+export interface Lead {
   id: number;
-  title: string;
+  firstName: string;
+  lastName: string;
   companyName: string;
-  contactName: string;
-  value: number;
-  stage: DealStage;
-  probability: number; // Percentage (e.g. 20, 50, 80, 100, 0)
-  expectedCloseDate: string;
+  jobTitle: string;
+  email: string;
+  phone: string;
+  status: LeadStatus;
+  source: LeadSource;
+  rating: number; // 1 to 5 Stars
   owner: string;
-  priority: DealPriority;
+  score: number; // 0 - 100 Lead Score
   lastActivity: string;
-  winLossReason?: string;
-  
-  // Tab details
-  tasks: DealTask[];
-  documents: DealDocument[];
   notes: string[];
-  timeline: DealActivity[];
+  tasks: LeadTask[];
+  timeline: LeadActivity[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class DealsService {
-  private initialDeals: Deal[] = [
+export class LeadsService {
+  private initialLeads: Lead[] = [
     {
       id: 1,
-      title: 'Enterprise CRM Migration',
-      companyName: 'Apex Global Systems',
-      contactName: 'Sarah Jenkins',
-      value: 120000,
-      stage: 'Negotiation',
-      probability: 80,
-      expectedCloseDate: '2026-08-15',
+      firstName: 'Marcus',
+      lastName: 'Vance',
+      companyName: 'Nexis Tech Solutions',
+      jobTitle: 'VP of Technology',
+      email: 'm.vance@nexistech.io',
+      phone: '+1 (555) 019-2831',
+      status: 'Qualified',
+      source: 'LinkedIn',
+      rating: 5,
+      score: 85,
       owner: 'Alex Morgan',
-      priority: 'High',
       lastActivity: '1 hour ago',
-      tasks: [{ id: 1, title: 'Send final contract draft', dueDate: '2026-08-01', isCompleted: false }],
-      documents: [{ id: 1, name: 'SLA_Draft_v2.pdf', size: '1.8 MB', uploadedAt: '2026-07-28' }],
-      notes: ['Client requested 5% discount on multi-year terms.'],
-      timeline: [{ id: 1, title: 'Moved to Negotiation', description: 'Updated stage after pricing call.', timestamp: '2026-07-28 11:00 AM', type: 'stage_change' }]
+      notes: ['Interested in enterprise tier with 50+ seats.'],
+      tasks: [{ id: 1, title: 'Schedule qualification demo', dueDate: '2026-08-02', isCompleted: false }],
+      timeline: [
+        { id: 1, title: 'Lead Status Changed', description: 'Moved to Qualified by Alex', timestamp: '2026-07-28 10:30 AM', type: 'status_change' }
+      ]
     },
     {
       id: 2,
-      title: 'Cloud Infrastructure SLA',
-      companyName: 'BrightTech Solutions',
-      contactName: 'David Chen',
-      value: 45000,
-      stage: 'Proposal',
-      probability: 50,
-      expectedCloseDate: '2026-08-30',
+      firstName: 'Rachel',
+      lastName: 'Adams',
+      companyName: 'Horizon Logistics',
+      jobTitle: 'Operations Manager',
+      email: 'rachel@horizonlog.com',
+      phone: '+1 (555) 432-8765',
+      status: 'Contacted',
+      source: 'Website',
+      rating: 3,
+      score: 60,
       owner: 'Liam O\'Connor',
-      priority: 'Medium',
-      lastActivity: '3 hours ago',
+      lastActivity: '4 hours ago',
+      notes: ['Filled out contact form regarding API pricing.'],
       tasks: [],
-      documents: [{ id: 2, name: 'Proposal_BrightTech.pdf', size: '3.1 MB', uploadedAt: '2026-07-25' }],
-      notes: ['Technical team reviewing API integration requirements.'],
       timeline: []
     },
     {
       id: 3,
-      title: 'Custom AI Module Integration',
-      companyName: 'Vanguard Ltd',
-      contactName: 'Elena Rostova',
-      value: 85000,
-      stage: 'Prospecting',
-      probability: 20,
-      expectedCloseDate: '2026-09-15',
+      firstName: 'Carlos',
+      lastName: 'Mendoza',
+      companyName: 'Starlight Retail',
+      jobTitle: 'Director of Operations',
+      email: 'c.mendoza@starlight.net',
+      phone: '+1 (555) 888-1212',
+      status: 'New',
+      source: 'Cold Outreach',
+      rating: 2,
+      score: 40,
       owner: 'Sarah Jenkins',
-      priority: 'Medium',
-      lastActivity: '1 day ago',
-      tasks: [],
-      documents: [],
+      lastActivity: 'Yesterday',
       notes: [],
+      tasks: [],
       timeline: []
     },
     {
       id: 4,
-      title: 'Annual SaaS Expansion',
-      companyName: 'Solaris Systems',
-      contactName: 'Emma Watson',
-      value: 210000,
-      stage: 'Closed Won',
-      probability: 100,
-      expectedCloseDate: '2026-07-10',
+      firstName: 'Jessica',
+      lastName: 'Alba',
+      companyName: 'Pinnacle Growth',
+      jobTitle: 'Chief Marketing Officer',
+      email: 'jalba@pinnacle.com',
+      phone: '+1 (555) 999-4433',
+      status: 'Unqualified',
+      source: 'Trade Show',
+      rating: 1,
+      score: 15,
       owner: 'Alex Morgan',
-      priority: 'High',
-      lastActivity: '2 weeks ago',
-      winLossReason: 'Best value proposition and feature set.',
+      lastActivity: '3 days ago',
+      notes: ['Budget too low for enterprise plans.'],
       tasks: [],
-      documents: [],
-      notes: [],
-      timeline: []
-    },
-    {
-      id: 5,
-      title: 'Legacy Database Replacement',
-      companyName: 'Quantum Corp',
-      contactName: 'James Wilson',
-      value: 30000,
-      stage: 'Closed Lost',
-      probability: 0,
-      expectedCloseDate: '2026-07-05',
-      owner: 'Liam O\'Connor',
-      priority: 'Low',
-      lastActivity: '3 weeks ago',
-      winLossReason: 'Went with competitor due to legacy system lock-in.',
-      tasks: [],
-      documents: [],
-      notes: [],
       timeline: []
     }
   ];
 
-  private dealsSubject = new BehaviorSubject<Deal[]>(this.initialDeals);
-  deals$ = this.dealsSubject.asObservable();
+  private leadsSubject = new BehaviorSubject<Lead[]>(this.initialLeads);
+  leads$ = this.leadsSubject.asObservable();
 
- 
+  updateStatus(leadId: number, status: LeadStatus): void {
+    const updated = this.leadsSubject.value.map(lead => {
+      if (lead.id === leadId) {
+        return {
+          ...lead,
+          status,
+          lastActivity: 'Just now',
+          timeline: [
+            {
+              id: Date.now(),
+              title: `Status Changed to ${status}`,
+              description: `Lead status updated to ${status}`,
+              timestamp: 'Just now',
+              type: 'status_change' as const
+            },
+            ...lead.timeline
+          ]
+        };
+      }
+      return lead;
+    });
+    this.leadsSubject.next(updated);
+  }
+
+  addLead(lead: Lead): void {
+    this.leadsSubject.next([lead, ...this.leadsSubject.value]);
+  }
+
+  deleteLeads(ids: number[]): void {
+    const updated = this.leadsSubject.value.filter(l => !ids.includes(l.id));
+    this.leadsSubject.next(updated);
+  }
 }
