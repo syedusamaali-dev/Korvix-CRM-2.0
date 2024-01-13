@@ -1,1 +1,375 @@
-<p>deals works!</p>
+<div class="deals-container">
+  <!-- MAIN DEALS VIEW -->
+  <ng-container *ngIf="!selectedDeal">
+    <!-- Header -->
+    <header class="module-header">
+      <div>
+        <h2>Deals Pipeline</h2>
+        <p class="subtitle">Track sales opportunities, forecast revenue, and progress deals across stages.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="exportCSV()">📥 Export</button>
+        <button class="btn btn-primary" (click)="showAddModal = true">┼ New Deal</button>
+      </div>
+    </header>
+
+    <!-- Top KPI Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Total Deals</span>
+        <span class="kpi-value">{{ totalDeals }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Open Deals</span>
+        <span class="kpi-value info-text">{{ openDeals }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Won Deals</span>
+        <span class="kpi-value success-text">{{ wonDeals }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Lost Deals</span>
+        <span class="kpi-value danger-text">{{ lostDeals }}</span>
+      </div>
+      <div class="kpi-card highlight">
+        <span class="kpi-label">Pipeline Value</span>
+        <span class="kpi-value">{{ pipelineValue | currency:'USD':'symbol':'1.0-0' }}</span>
+      </div>
+      <div class="kpi-card highlight">
+        <span class="kpi-label">Expected Revenue</span>
+        <span class="kpi-value text-primary">{{ expectedRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+      </div>
+    </section>
+
+    <!-- Toolbar & Sticky Filters -->
+    <section class="toolbar-card sticky-toolbar">
+      <div class="filters-row">
+        <input 
+          type="text" 
+          placeholder="Search deal, company, contact..." 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="applyFilters()" 
+          class="form-input search-input" 
+        />
+
+        <select [(ngModel)]="selectedStageFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Stages</option>
+          <option *ngFor="let s of stages" [value]="s">{{ s }}</option>
+        </select>
+
+        <select [(ngModel)]="selectedOwnerFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Owners</option>
+          <option value="Alex Morgan">Alex Morgan</option>
+          <option value="Liam O'Connor">Liam O'Connor</option>
+          <option value="Sarah Jenkins">Sarah Jenkins</option>
+        </select>
+
+        <select [(ngModel)]="selectedPriorityFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Priorities</option>
+          <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+
+      <div class="right-toolbar">
+        <div class="view-toggle">
+          <button [class.active]="viewMode === 'kanban'" (click)="viewMode = 'kanban'">📊 Kanban</button>
+          <button [class.active]="viewMode === 'table'" (click)="viewMode = 'table'">📋 Table</button>
+          <button [class.active]="viewMode === 'analytics'" (click)="viewMode = 'analytics'">📈 Charts</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bulk Action Bar -->
+    <div class="bulk-action-bar" *ngIf="selectedIds.size > 0">
+      <span><strong>{{ selectedIds.size }}</strong> deals selected</span>
+      <div class="bulk-controls">
+        <select [(ngModel)]="bulkStageTarget" class="form-input-sm">
+          <option *ngFor="let s of stages" [value]="s">Move to {{ s }}</option>
+        </select>
+        <button class="btn btn-secondary-sm" (click)="executeBulkUpdate()">Apply Stage</button>
+        <button class="btn btn-danger-sm" (click)="executeBulkDelete()">Delete</button>
+      </div>
+    </div>
+
+    <!-- 1. KANBAN BOARD VIEW -->
+    <div class="kanban-wrapper" *ngIf="viewMode === 'kanban'">
+      <div 
+        class="kanban-column" 
+        *ngFor="let stage of stages"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop($event, stage)"
+      >
+        <div class="column-header">
+          <div class="title-row">
+            <h4>{{ stage }}</h4>
+            <span class="count-badge">{{ getDealsByStage(stage).length }}</span>
+          </div>
+          <div class="column-total">{{ getStageTotalValue(stage) | currency:'USD':'symbol':'1.0-0' }}</div>
+        </div>
+
+        <div class="column-cards">
+          <div 
+            class="deal-card" 
+            *ngFor="let deal of getDealsByStage(stage)"
+            draggable="true"
+            (dragstart)="onDragStart($event, deal.id)"
+            (click)="openDetail(deal)"
+          >
+            <!-- Reminder Badge -->
+            <div class="overdue-badge" *ngIf="deal.isOverdueFollowUp">⚠️ Follow-up Overdue</div>
+
+            <div class="card-top">
+              <span class="priority-badge" [ngClass]="deal.priority.toLowerCase()">{{ deal.priority }}</span>
+              <span class="deal-value">{{ deal.value | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <h5 class="deal-name">{{ deal.name }}</h5>
+            <p class="company-name">🏢 {{ deal.company }}</p>
+
+            <!-- Probability Progress Bar -->
+            <div class="progress-wrapper">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="deal.probability"></div>
+              </div>
+              <span class="prob-text">{{ deal.probability }}%</span>
+            </div>
+
+            <div class="card-footer">
+              <span class="close-date">📅 {{ deal.closeDate }}</span>
+              <span class="owner-avatar" title="{{ deal.owner }}">{{ deal.owner.charAt(0) }}</span>
+            </div>
+          </div>
+
+          <div class="empty-drop-zone" *ngIf="getDealsByStage(stage).length === 0">
+            Drop deal here
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. DATA TABLE VIEW -->
+    <div class="table-responsive" *ngIf="viewMode === 'table'">
+      <table class="crm-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col"><input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()" /></th>
+            <th>Deal Name</th>
+            <th>Company</th>
+            <th>Primary Contact</th>
+            <th>Value</th>
+            <th>Stage</th>
+            <th>Probability</th>
+            <th>Close Date</th>
+            <th>Owner</th>
+            <th>Priority</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let deal of filteredDeals" [class.selected-row]="selectedIds.has(deal.id)">
+            <td class="checkbox-col"><input type="checkbox" [checked]="selectedIds.has(deal.id)" (change)="toggleSelect(deal.id)" /></td>
+            <td class="font-bold text-link" (click)="openDetail(deal)">{{ deal.name }}</td>
+            <td>{{ deal.company }}</td>
+            <td>{{ deal.contact }}</td>
+            <td class="font-bold">{{ deal.value | currency:'USD':'symbol':'1.0-0' }}</td>
+            <td><span class="stage-pill" [ngClass]="deal.stage.toLowerCase().replace(' ', '-')">{{ deal.stage }}</span></td>
+            <td>
+              <div class="table-progress">
+                <div class="progress-bar mini"><div class="progress-fill" [style.width.%]="deal.probability"></div></div>
+                <span>{{ deal.probability }}%</span>
+              </div>
+            </td>
+            <td>{{ deal.closeDate }}</td>
+            <td>{{ deal.owner }}</td>
+            <td><span class="priority-badge" [ngClass]="deal.priority.toLowerCase()">{{ deal.priority }}</span></td>
+            <td>
+              <button class="btn-icon" (click)="openDetail(deal)">👁 View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3. ANALYTICS & CHARTS VIEW -->
+    <div class="analytics-grid" *ngIf="viewMode === 'analytics'">
+      <div class="chart-card">
+        <h3>Pipeline Value by Stage</h3>
+        <div class="bar-chart-mock">
+          <div class="chart-row" *ngFor="let s of stages">
+            <span class="row-label">{{ s }}</span>
+            <div class="row-bar-container">
+              <div class="row-bar" [style.width.%]="(getStageTotalValue(s) / (pipelineValue || 1)) * 100"></div>
+            </div>
+            <span class="row-val">{{ getStageTotalValue(s) | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Win vs Loss Ratio</h3>
+        <div class="win-loss-wrapper">
+          <div class="stat-box green">
+            <span class="stat-num">{{ wonDeals }}</span>
+            <span>Deals Won</span>
+          </div>
+          <div class="stat-box red">
+            <span class="stat-num">{{ lostDeals }}</span>
+            <span>Deals Lost</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- DETAIL PAGE WITH TABS & RELATIONSHIPS -->
+  <ng-container *ngIf="selectedDeal">
+    <div class="detail-container">
+      <button class="btn btn-secondary back-btn" (click)="closeDetail()">← Back to Deals</button>
+
+      <!-- Deal Header -->
+      <header class="detail-header">
+        <div>
+          <div class="title-row">
+            <h2>{{ selectedDeal.name }}</h2>
+            <span class="priority-badge" [ngClass]="selectedDeal.priority.toLowerCase()">{{ selectedDeal.priority }}</span>
+            <span class="stage-pill">{{ selectedDeal.stage }}</span>
+          </div>
+          <p class="subtitle">🏢 Associated Company: <strong>{{ selectedDeal.company }}</strong> | Contact: <strong>{{ selectedDeal.contact }}</strong></p>
+        </div>
+
+        <div class="quick-actions">
+          <button class="btn btn-secondary" (click)="selectedDeal.stage = 'Won'">Mark as Won 🎉</button>
+          <button class="btn btn-secondary" (click)="selectedDeal.stage = 'Lost'">Mark as Lost ❌</button>
+          <button class="btn btn-primary">Edit Deal</button>
+        </div>
+      </header>
+
+      <!-- Tabs Navigation -->
+      <nav class="detail-tabs">
+        <button [class.active]="activeDetailTab === 'overview'" (click)="activeDetailTab = 'overview'">Overview</button>
+        <button [class.active]="activeDetailTab === 'activities'" (click)="activeDetailTab = 'activities'">Activities</button>
+        <button [class.active]="activeDetailTab === 'tasks'" (click)="activeDetailTab = 'tasks'">Tasks ({{ selectedDeal.tasks.length }})</button>
+        <button [class.active]="activeDetailTab === 'notes'" (click)="activeDetailTab = 'notes'">Notes ({{ selectedDeal.notes.length }})</button>
+        <button [class.active]="activeDetailTab === 'documents'" (click)="activeDetailTab = 'documents'">Documents ({{ selectedDeal.documents.length }})</button>
+        <button [class.active]="activeDetailTab === 'emails'" (click)="activeDetailTab = 'emails'">Emails ({{ selectedDeal.emails.length }})</button>
+        <button [class.active]="activeDetailTab === 'timeline'" (click)="activeDetailTab = 'timeline'">Timeline</button>
+      </nav>
+
+      <!-- Tab Content Area -->
+      <div class="tab-card">
+        <!-- OVERVIEW TAB -->
+        <div *ngIf="activeDetailTab === 'overview'" class="overview-grid">
+          <div class="info-block">
+            <h3>Deal Metrics</h3>
+            <div class="data-row"><span>Deal Value:</span> <strong>{{ selectedDeal.value | currency:selectedDeal.currency }}</strong></div>
+            <div class="data-row"><span>Probability:</span> <strong>{{ selectedDeal.probability }}%</strong></div>
+            <div class="data-row"><span>Expected Close:</span> <strong>{{ selectedDeal.closeDate }}</strong></div>
+            <div class="data-row"><span>Source:</span> <strong>{{ selectedDeal.source }}</strong></div>
+            <div class="data-row"><span>Sales Owner:</span> <strong>{{ selectedDeal.owner }}</strong></div>
+          </div>
+
+          <div class="info-block">
+            <h3>Relationships</h3>
+            <div class="data-row"><span>Company:</span> <a href="#" class="text-link">{{ selectedDeal.company }}</a></div>
+            <div class="data-row"><span>Primary Contact:</span> <a href="#" class="text-link">{{ selectedDeal.contact }}</a> ({{ selectedDeal.contactEmail }})</div>
+            <div class="data-row"><span>Description:</span> <p>{{ selectedDeal.description }}</p></div>
+          </div>
+        </div>
+
+        <!-- ACTIVITIES TAB -->
+        <div *ngIf="activeDetailTab === 'activities'">
+          <button class="btn btn-secondary-sm margin-bottom">+ Schedule Meeting</button>
+          <p class="subtitle">No upcoming meetings scheduled.</p>
+        </div>
+
+        <!-- TASKS TAB -->
+        <div *ngIf="activeDetailTab === 'tasks'">
+          <div *ngFor="let t of selectedDeal.tasks" class="item-card">
+            <input type="checkbox" [checked]="t.isCompleted" />
+            <div class="item-body">
+              <span class="font-bold">{{ t.title }}</span>
+              <span class="subtitle">Due: {{ t.dueDate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTES TAB -->
+        <div *ngIf="activeDetailTab === 'notes'">
+          <div *ngFor="let n of selectedDeal.notes" class="item-card">
+            <div class="item-body">
+              <span class="font-bold">{{ n.author }} - {{ n.createdAt }}</span>
+              <p>{{ n.text }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOCUMENTS TAB -->
+        <div *ngIf="activeDetailTab === 'documents'">
+          <div *ngFor="let d of selectedDeal.documents" class="item-card">
+            📄 <strong>{{ d.fileName }}</strong> ({{ d.fileSize }}) - Uploaded {{ d.uploadedAt }}
+          </div>
+        </div>
+
+        <!-- EMAILS TAB -->
+        <div *ngIf="activeDetailTab === 'emails'">
+          <div *ngFor="let e of selectedDeal.emails" class="item-card">
+            ✉ <strong>{{ e.subject }}</strong> - From: {{ e.sender }} ({{ e.date }})
+            <p class="subtitle">{{ e.preview }}</p>
+          </div>
+        </div>
+
+        <!-- TIMELINE TAB -->
+        <div *ngIf="activeDetailTab === 'timeline'" class="timeline-wrapper">
+          <div *ngFor="let act of selectedDeal.timeline" class="timeline-node">
+            <div class="node-icon">🕒</div>
+            <div class="node-content">
+              <strong>{{ act.title }}</strong>
+              <p>{{ act.description }}</p>
+              <span class="subtitle">{{ act.timestamp }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- NEW DEAL MODAL -->
+  <div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal-card">
+      <h3>Create Sales Opportunity / Deal</h3>
+      
+      <div class="modal-form">
+        <label>Deal Title</label>
+        <input type="text" [(ngModel)]="newDeal.name" (ngModelChange)="checkForDuplicates()" class="form-input" placeholder="e.g. Enterprise Cloud License" />
+
+        <div class="duplicate-warning" *ngIf="showDuplicateWarning">
+          ⚠️ Warning: A deal with this name and company already exists!
+        </div>
+
+        <label>Company Name</label>
+        <input type="text" [(ngModel)]="newDeal.company" (ngModelChange)="checkForDuplicates()" class="form-input" placeholder="e.g. Acme Corp" />
+
+        <label>Primary Contact</label>
+        <input type="text" [(ngModel)]="newDeal.contact" class="form-input" placeholder="e.g. Jane Doe" />
+
+        <label>Estimated Value ($)</label>
+        <input type="number" [(ngModel)]="newDeal.value" class="form-input" />
+
+        <label>Stage</label>
+        <select [(ngModel)]="newDeal.stage" class="form-input">
+          <option *ngFor="let s of stages" [value]="s">{{ s }}</option>
+        </select>
+
+        <label>Priority</label>
+        <select [(ngModel)]="newDeal.priority" class="form-input">
+          <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="showAddModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="saveDeal()">Save Deal</button>
+      </div>
+    </div>
+  </div>
+</div>

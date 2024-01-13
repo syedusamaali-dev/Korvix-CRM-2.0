@@ -1,0 +1,154 @@
+$primary: #0284c7;
+$primary-hover: #0369a1;
+$bg-main: #f8fafc;
+$bg-card: #ffffff;
+$border-color: #e2e8f0;
+$text-dark: #0f172a;
+$text-muted: #64748b;
+
+.deals-container {
+  padding: 1.5rem;
+  background-color: $bg-main;
+  color: $text-dark;
+  font-family: system-ui, -apple-system, sans-serif;
+
+  .module-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+    .subtitle { color: $text-muted; font-size: 0.875rem; margin: 0; }
+  }
+
+  /* KPIs */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;
+    .kpi-card {
+      background: $bg-card; border: 1px solid $border-color; padding: 1rem; border-radius: 8px; display: flex; flex-direction: column;
+      .kpi-label { font-size: 0.75rem; text-transform: uppercase; color: $text-muted; font-weight: 600; }
+      .kpi-value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+      &.highlight { border-left: 4px solid $primary; }
+      .info-text { color: #3b82f6; }
+      .success-text { color: #10b981; }
+      .danger-text { color: #ef4444; }
+      .text-primary { color: $primary; }
+    }
+  }
+
+  /* Toolbar */
+  .sticky-toolbar {
+    position: sticky; top: 0; z-index: 10; background: $bg-card; border: 1px solid $border-color; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    .filters-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .view-toggle {
+      display: flex; border: 1px solid $border-color; border-radius: 6px; overflow: hidden;
+      button { padding: 0.4rem 0.8rem; border: none; background: white; cursor: pointer; font-size: 0.85rem; &.active { background: $primary; color: white; } }
+    }
+  }
+
+  .form-input { padding: 0.5rem; border: 1px solid $border-color; border-radius: 6px; background: white; &.search-input { min-width: 240px; } }
+  .form-input-sm { padding: 0.25rem; border: 1px solid $border-color; border-radius: 4px; font-size: 0.8rem; }
+
+  /* Bulk Bar */
+  .bulk-action-bar {
+    background: #e0f2fe; border: 1px solid #bae6fd; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem;
+    display: flex; justify-content: space-between; align-items: center; color: #0369a1;
+  }
+
+  /* KANBAN BOARD */
+  .kanban-wrapper {
+    display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem;
+    .kanban-column {
+      min-width: 280px; width: 280px; background: #f1f5f9; border-radius: 8px; padding: 0.75rem; display: flex; flex-direction: column; min-height: 550px;
+      .column-header {
+        background: white; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; border-top: 3px solid $primary;
+        .title-row { display: flex; justify-content: space-between; align-items: center; h4 { margin: 0; font-size: 0.9rem; } }
+        .count-badge { background: #e2e8f0; font-size: 0.75rem; padding: 0.1rem 0.4rem; border-radius: 10px; }
+        .column-total { font-weight: 700; color: $text-muted; font-size: 0.85rem; margin-top: 0.25rem; }
+      }
+      .column-cards {
+        display: flex; flex-direction: column; gap: 0.75rem; flex: 1;
+        .deal-card {
+          background: white; border: 1px solid $border-color; border-radius: 6px; padding: 0.875rem; cursor: grab; position: relative;
+          &:hover { border-color: $primary; transform: translateY(-2px); transition: transform 0.1s; }
+          .overdue-badge { background: #fef2f2; color: #dc2626; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.4rem; border-radius: 4px; margin-bottom: 0.5rem; }
+          .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+          .deal-value { font-weight: 700; color: $primary; font-size: 0.9rem; }
+          .deal-name { margin: 0 0 0.25rem 0; font-size: 0.95rem; }
+          .company-name { color: $text-muted; font-size: 0.8rem; margin: 0 0 0.75rem 0; }
+          .progress-wrapper {
+            display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;
+            .progress-bar { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; .progress-fill { height: 100%; background: $primary; } }
+            .prob-text { font-size: 0.7rem; color: $text-muted; font-weight: 600; }
+          }
+          .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: $text-muted; }
+          .owner-avatar { background: #0284c7; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
+        }
+        .empty-drop-zone { border: 2px dashed #cbd5e1; border-radius: 6px; padding: 2rem; text-align: center; color: $text-muted; font-size: 0.8rem; }
+      }
+    }
+  }
+
+  /* Priority Badges */
+  .priority-badge {
+    font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.4rem; border-radius: 4px; text-transform: uppercase;
+    &.urgent { background: #fee2e2; color: #991b1b; }
+    &.high { background: #ffedd5; color: #c2410c; }
+    &.medium { background: #e0f2fe; color: #0369a1; }
+    &.low { background: #f1f5f9; color: #475569; }
+  }
+
+  /* Stage Pills */
+  .stage-pill { background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+
+  /* Table */
+  .table-responsive { background: white; border: 1px solid $border-color; border-radius: 8px; overflow-x: auto; }
+  .crm-table {
+    width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem;
+    th, td { padding: 0.75rem 1rem; border-bottom: 1px solid $border-color; }
+    th { background: #f8fafc; color: $text-muted; }
+  }
+
+  .text-link { color: $primary; cursor: pointer; text-decoration: none; }
+  .font-bold { font-weight: 600; }
+
+  /* Analytics Charts Mock */
+  .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+  .chart-card {
+    background: white; border: 1px solid $border-color; border-radius: 8px; padding: 1.5rem;
+    .bar-chart-mock {
+      display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;
+      .chart-row {
+        display: flex; align-items: center; gap: 1rem; font-size: 0.85rem;
+        .row-label { width: 120px; color: $text-muted; }
+        .row-bar-container { flex: 1; height: 16px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+        .row-bar { height: 100%; background: $primary; }
+        .row-val { width: 90px; font-weight: 700; text-align: right; }
+      }
+    }
+  }
+
+  /* Details View */
+  .detail-header { background: white; border: 1px solid $border-color; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .detail-tabs {
+    display: flex; gap: 0.5rem; border-bottom: 1px solid $border-color; margin-bottom: 1rem;
+    button { padding: 0.75rem 1rem; border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer; color: $text-muted; &.active { border-color: $primary; color: $primary; font-weight: 600; } }
+  }
+  .tab-card { background: white; border: 1px solid $border-color; padding: 1.5rem; border-radius: 8px; }
+
+  /* Modals & Buttons */
+  .btn {
+    padding: 0.5rem 1rem; border-radius: 6px; border: none; font-weight: 500; cursor: pointer;
+    &-primary { background: $primary; color: white; }
+    &-secondary { background: white; border: 1px solid $border-color; color: $text-dark; }
+    &-danger-sm { background: #ef4444; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; }
+    &-secondary-sm { background: white; border: 1px solid $border-color; padding: 0.25rem 0.5rem; border-radius: 4px; }
+  }
+
+  .modal-backdrop {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000;
+    .modal-card {
+      background: white; padding: 1.5rem; border-radius: 8px; width: 440px;
+      .modal-form { display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; label { font-size: 0.8rem; font-weight: 600; color: $text-muted; } }
+      .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+      .duplicate-warning { background: #fef2f2; color: #991b1b; padding: 0.5rem; border-radius: 4px; font-size: 0.8rem; margin: 0.25rem 0; }
+    }
+  }
+}
