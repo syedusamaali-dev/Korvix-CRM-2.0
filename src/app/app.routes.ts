@@ -46,8 +46,8 @@ export const routes: Routes = [
         loadChildren: () => import('./views/calendar/routes').then((m) => m.routes)
       },
       {
-        path: 'charts',
-        loadChildren: () => import('./views/charts/routes').then((m) => m.routes)
+        path: 'reports',
+        loadChildren: () => import('./views/reports/routes').then((m) => m.routes)
       },
       {
         path: 'pages',
