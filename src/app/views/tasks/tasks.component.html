@@ -1,1 +1,389 @@
-<p>tasks works!</p>
+<div class="tasks-module">
+  <!-- MAIN VIEW -->
+  <ng-container *ngIf="!selectedTask">
+    <!-- Header -->
+    <header class="module-header">
+      <div>
+        <h2>Tasks & Activities</h2>
+        <p class="subtitle">Manage daily work, schedule follow-ups, and track team progress across entities.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" (click)="showAddModal = true">┼ New Task</button>
+      </div>
+    </header>
+
+    <!-- KPI Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-title">Total Tasks</span>
+        <span class="kpi-value">{{ totalTasksCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Pending</span>
+        <span class="kpi-value info-text">{{ pendingTasksCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">In Progress</span>
+        <span class="kpi-value warning-text">{{ inProgressTasksCount }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Completed</span>
+        <span class="kpi-value success-text">{{ completedTasksCount }}</span>
+      </div>
+      <div class="kpi-card highlight-danger">
+        <span class="kpi-title">Overdue</span>
+        <span class="kpi-value danger-text">{{ overdueTasksCount }}</span>
+      </div>
+      <div class="kpi-card highlight-today">
+        <span class="kpi-title">Due Today</span>
+        <span class="kpi-value text-primary">{{ dueTodayTasksCount }}</span>
+      </div>
+    </section>
+
+    <!-- Toolbar & Filters -->
+    <section class="toolbar-card">
+      <div class="filters-row">
+        <input 
+          type="text" 
+          placeholder="Search task, related entity..." 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="applyFilters()" 
+          class="form-input search-input" 
+        />
+
+        <select [(ngModel)]="selectedStatusFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Statuses</option>
+          <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+        </select>
+
+        <select [(ngModel)]="selectedPriorityFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Priorities</option>
+          <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+        </select>
+
+        <select [(ngModel)]="selectedAssigneeFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Assignees</option>
+          <option value="Alex Morgan">Alex Morgan</option>
+          <option value="Sarah Jenkins">Sarah Jenkins</option>
+          <option value="Liam O'Connor">Liam O'Connor</option>
+        </select>
+
+        <select [(ngModel)]="selectedDueDateFilter" (change)="applyFilters()" class="form-input">
+          <option value="All">All Dates</option>
+          <option value="Today">Due Today</option>
+          <option value="Overdue">Overdue</option>
+        </select>
+      </div>
+
+      <div class="view-and-bulk">
+        <div class="bulk-actions" *ngIf="selectedIds.size > 0">
+          <span>{{ selectedIds.size }} selected</span>
+          <button class="btn btn-danger-sm" (click)="deleteSelected()">Delete</button>
+        </div>
+
+        <div class="view-toggle">
+          <button [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">📋 Table View</button>
+          <button [class.active]="viewMode === 'kanban'" (click)="viewMode = 'kanban'">📊 Kanban Board</button>
+          <button [class.active]="viewMode === 'calendar'" (click)="viewMode = 'calendar'; generateCalendar()">📅 Calendar View</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. TABLE VIEW -->
+    <div class="table-responsive" *ngIf="viewMode === 'list'">
+      <table class="crm-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col"><input type="checkbox" [checked]="selectAll" (change)="toggleSelectAll()" /></th>
+            <th>Task Title</th>
+            <th>Related To</th>
+            <th>Assignee</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Progress</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of filteredTasks" [class.overdue-row]="isTaskOverdue(task)">
+            <td class="checkbox-col"><input type="checkbox" [checked]="selectedIds.has(task.id)" (change)="toggleSelect(task.id)" /></td>
+            <td>
+              <div class="task-title-cell">
+                <input type="checkbox" [checked]="task.status === 'Completed'" (change)="toggleTaskComplete(task, $event)" />
+                <span class="font-bold text-link" [class.line-through]="task.status === 'Completed'" (click)="openDetail(task)">
+                  {{ task.title }}
+                </span>
+                <span class="reminder-icon" *ngIf="task.reminderSet" title="Reminder Active">🔔</span>
+              </div>
+            </td>
+            <td>
+              <span class="entity-tag">{{ task.relatedEntityType }}:</span> {{ task.relatedEntityName }}
+            </td>
+            <td>
+              <div class="assignee-pill">
+                <span class="avatar-sm">{{ task.assigneeAvatar }}</span>
+                <span>{{ task.assignee }}</span>
+              </div>
+            </td>
+            <td><span class="priority-badge" [ngClass]="task.priority.toLowerCase()">{{ task.priority }}</span></td>
+            <td><span class="status-pill" [ngClass]="task.status.toLowerCase().replace(' ', '-')">{{ task.status }}</span></td>
+            <td>
+              <span [class.text-danger]="isTaskOverdue(task)" class="font-medium">
+                {{ task.dueDate }} {{ task.dueTime }}
+              </span>
+            </td>
+            <td>
+              <div class="progress-cell">
+                <div class="mini-bar"><div class="fill" [style.width.%]="task.progress"></div></div>
+                <span>{{ task.progress }}%</span>
+              </div>
+            </td>
+            <td>
+              <button class="btn-icon" (click)="openDetail(task)">👁 Details</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. KANBAN BOARD VIEW -->
+    <div class="kanban-wrapper" *ngIf="viewMode === 'kanban'">
+      <div 
+        class="kanban-column" 
+        *ngFor="let status of statuses"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop($event, status)"
+      >
+        <div class="column-header">
+          <h4>{{ status }}</h4>
+          <span class="count-pill">{{ getTasksByStatus(status).length }}</span>
+        </div>
+
+        <div class="column-body">
+          <div 
+            class="task-card" 
+            *ngFor="let task of getTasksByStatus(status)"
+            draggable="true"
+            (dragstart)="onDragStart($event, task.id)"
+            (click)="openDetail(task)"
+          >
+            <div class="card-header">
+              <span class="priority-badge" [ngClass]="task.priority.toLowerCase()">{{ task.priority }}</span>
+              <span class="overdue-tag" *ngIf="isTaskOverdue(task)">OVERDUE</span>
+            </div>
+
+            <h5 class="task-card-title">{{ task.title }}</h5>
+            <div class="entity-link">🔗 {{ task.relatedEntityType }}: <strong>{{ task.relatedEntityName }}</strong></div>
+
+            <div class="progress-bar-wrap">
+              <div class="progress-bar"><div class="fill" [style.width.%]="task.progress"></div></div>
+            </div>
+
+            <div class="card-footer">
+              <span class="due-date" [class.text-danger]="isTaskOverdue(task)">📅 {{ task.dueDate }}</span>
+              <span class="avatar-sm" title="{{ task.assignee }}">{{ task.assigneeAvatar }}</span>
+            </div>
+          </div>
+
+          <div class="empty-drop-zone" *ngIf="getTasksByStatus(status).length === 0">
+            Drag tasks here
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CALENDAR VIEW -->
+    <div class="calendar-wrapper" *ngIf="viewMode === 'calendar'">
+      <div class="calendar-header">
+        <button class="btn btn-secondary" (click)="changeMonth(-1)">◀ Previous</button>
+        <h3>{{ currentCalendarDate | date:'MMMM yyyy' }}</h3>
+        <button class="btn btn-secondary" (click)="changeMonth(1)">Next ▶</button>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="weekday-header" *ngFor="let day of weekDays">{{ day }}</div>
+
+        <div 
+          class="calendar-day-cell" 
+          *ngFor="let cell of calendarDays"
+          [class.other-month]="!cell.isCurrentMonth"
+          [class.today-cell]="cell.isToday"
+        >
+          <span class="day-number">{{ cell.dayNumber }}</span>
+
+          <div class="day-tasks-list">
+            <div 
+              class="cal-task-item" 
+              *ngFor="let t of cell.tasks"
+              [ngClass]="t.priority.toLowerCase()"
+              (click)="openDetail(t)"
+            >
+              <span class="cal-task-title">{{ t.title }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- TASK DETAIL DRAWER / PAGE -->
+  <ng-container *ngIf="selectedTask">
+    <div class="detail-container">
+      <button class="btn btn-secondary back-btn" (click)="closeDetail()">← Back to Tasks</button>
+
+      <div class="detail-header-card">
+        <div class="title-group">
+          <div class="tags-row">
+            <span class="priority-badge" [ngClass]="selectedTask.priority.toLowerCase()">{{ selectedTask.priority }}</span>
+            <span class="status-pill">{{ selectedTask.status }}</span>
+            <span class="recurring-tag" *ngIf="selectedTask.recurring !== 'None'">🔄 {{ selectedTask.recurring }}</span>
+          </div>
+          <h2>{{ selectedTask.title }}</h2>
+          <p class="subtitle">Related to <strong>{{ selectedTask.relatedEntityType }}</strong>: <a>{{ selectedTask.relatedEntityName }}</a></p>
+        </div>
+
+        <div class="detail-actions">
+          <button class="btn btn-secondary" (click)="toggleTaskComplete(selectedTask, $event)">
+            {{ selectedTask.status === 'Completed' ? 'Mark Incomplete' : '✓ Mark Complete' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Navigation Tabs -->
+      <nav class="detail-tabs">
+        <button [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'">Overview</button>
+        <button [class.active]="activeTab === 'checklist'" (click)="activeTab = 'checklist'">Checklist ({{ selectedTask.checklist.length }})</button>
+        <button [class.active]="activeTab === 'comments'" (click)="activeTab = 'comments'">Comments ({{ selectedTask.comments.length }})</button>
+        <button [class.active]="activeTab === 'attachments'" (click)="activeTab = 'attachments'">Attachments ({{ selectedTask.attachments.length }})</button>
+        <button [class.active]="activeTab === 'timeline'" (click)="activeTab = 'timeline'">Activity Timeline</button>
+      </nav>
+
+      <div class="tab-content-card">
+        <!-- OVERVIEW TAB -->
+        <div *ngIf="activeTab === 'overview'" class="overview-grid">
+          <div class="info-block">
+            <h3>Task Meta Details</h3>
+            <p><strong>Assignee:</strong> {{ selectedTask.assignee }}</p>
+            <p><strong>Due Date & Time:</strong> {{ selectedTask.dueDate }} at {{ selectedTask.dueTime }}</p>
+
+            <p><strong>Reminder:</strong> {{ selectedTask.reminderSet ? 'Set Active 🔔' : 'Off' }}</p>
+            <p><strong>Overall Progress:</strong> {{ selectedTask.progress }}%</p>
+          </div>
+
+          <div class="info-block">
+            <h3>Description</h3>
+            <p>{{ selectedTask.description || 'No detailed description provided.' }}</p>
+          </div>
+        </div>
+
+        <!-- CHECKLIST TAB -->
+        <div *ngIf="activeTab === 'checklist'" class="checklist-section">
+          <div class="add-subtask-row">
+            <input type="text" placeholder="Add sub-task..." [(ngModel)]="newChecklistItemText" (keyup.enter)="addChecklistItem()" class="form-input" />
+            <button class="btn btn-primary" (click)="addChecklistItem()">Add</button>
+          </div>
+
+          <div class="checklist-items">
+            <div *ngFor="let item of selectedTask.checklist" class="check-item">
+              <input type="checkbox" [checked]="item.isDone" (change)="toggleChecklistItem(item)" />
+              <span [class.line-through]="item.isDone">{{ item.text }}</span>
+            </div>
+            <p *ngIf="selectedTask.checklist.length === 0" class="subtitle">No checklist items added.</p>
+          </div>
+        </div>
+
+        <!-- COMMENTS TAB -->
+        <div *ngIf="activeTab === 'comments'" class="comments-section">
+          <div class="comment-input-row">
+            <textarea placeholder="Write a comment..." [(ngModel)]="newCommentText" class="form-input text-area"></textarea>
+            <button class="btn btn-primary" (click)="addComment()">Post Comment</button>
+          </div>
+
+          <div class="comments-list">
+            <div *ngFor="let comment of selectedTask.comments" class="comment-card">
+              <span class="avatar-sm">{{ comment.avatar }}</span>
+              <div class="comment-body">
+                <div class="comment-meta">
+                  <strong>{{ comment.author }}</strong>
+                  <span class="subtitle">{{ comment.timestamp }}</span>
+                </div>
+                <p>{{ comment.text }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ATTACHMENTS TAB -->
+        <div *ngIf="activeTab === 'attachments'">
+          <div *ngFor="let att of selectedTask.attachments" class="item-card">
+            📄 <strong>{{ att.fileName }}</strong> ({{ att.fileSize }}) - Uploaded {{ att.uploadedAt }}
+          </div>
+          <p *ngIf="selectedTask.attachments.length === 0" class="subtitle">No documents attached.</p>
+        </div>
+
+        <!-- TIMELINE TAB -->
+        <div *ngIf="activeTab === 'timeline'" class="timeline-list">
+          <div *ngFor="let node of selectedTask.timeline" class="timeline-item">
+            <span class="subtitle">{{ node.timestamp }}</span>
+            <div class="font-bold">{{ node.title }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- CREATE TASK MODAL -->
+  <div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal-card">
+      <h3>Create New Task</h3>
+      
+      <div class="modal-form">
+        <label>Task Title</label>
+        <input type="text" [(ngModel)]="newTask.title" placeholder="e.g. Follow-up demo call" class="form-input" />
+
+        <label>Related Entity Type</label>
+        <select [(ngModel)]="newTask.relatedEntityType" class="form-input">
+          <option *ngFor="let t of entityTypes" [value]="t">{{ t }}</option>
+        </select>
+
+        <label>Related Entity Name</label>
+        <input type="text" [(ngModel)]="newTask.relatedEntityName" placeholder="e.g. Nexus Tech Solutions" class="form-input" />
+
+        <div class="form-row">
+          <div>
+            <label>Due Date</label>
+            <input type="date" [(ngModel)]="newTask.dueDate" class="form-input" />
+          </div>
+          <div>
+            <label>Due Time</label>
+            <input type="time" [(ngModel)]="newTask.dueTime" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Priority</label>
+            <select [(ngModel)]="newTask.priority" class="form-input">
+              <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+            </select>
+          </div>
+          <div>
+            <label>Recurring</label>
+            <select [(ngModel)]="newTask.recurring" class="form-input">
+              <option value="None">None</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="showAddModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="saveTask()">Save Task</button>
+      </div>
+    </div>
+  </div>
+</div>
