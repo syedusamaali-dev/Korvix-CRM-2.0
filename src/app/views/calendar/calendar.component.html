@@ -1,1 +1,351 @@
-<p>calendar works!</p>
+<div class="calendar-module">
+  <!-- Header -->
+  <header class="module-header">
+    <div>
+      <h2>Calendar & Agenda</h2>
+      <p class="subtitle">Central workspace for scheduling meetings, tracking tasks, calls, and sales follow-ups.</p>
+    </div>
+    <div class="header-actions">
+      <div class="quick-create-group">
+        <button class="btn btn-primary" (click)="openCreateModal('Meeting')">┼ Schedule Meeting</button>
+        <button class="btn btn-secondary" (click)="openCreateModal('Call')">📞 Call</button>
+        <button class="btn btn-secondary" (click)="openCreateModal('Task')">✓ Task</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- KPI Banner -->
+  <section class="kpi-grid">
+    <div class="kpi-card highlight-today">
+      <span class="kpi-title">Today's Events</span>
+      <span class="kpi-value text-primary">{{ todayEventsCount }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Upcoming Meetings</span>
+      <span class="kpi-value info-text">{{ upcomingMeetingsCount }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Due Tasks</span>
+      <span class="kpi-value warning-text">{{ dueTasksCount }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Follow-ups</span>
+      <span class="kpi-value text-purple">{{ followUpsCount }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Completed</span>
+      <span class="kpi-value success-text">{{ completedEventsCount }}</span>
+    </div>
+  </section>
+
+  <!-- Toolbar & Filters -->
+  <section class="toolbar-card">
+    <div class="navigation-group">
+      <button class="btn btn-secondary" (click)="goToToday()">Today</button>
+      <div class="nav-arrows">
+        <button class="btn-icon" (click)="navigateDate(-1)">◀</button>
+        <button class="btn-icon" (click)="navigateDate(1)">▶</button>
+      </div>
+      <h3 class="current-date-title">{{ currentDate | date:'MMMM yyyy' }}</h3>
+    </div>
+
+    <div class="filters-group">
+      <input 
+        type="text" 
+        placeholder="Search events, clients..." 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="applyFilters()" 
+        class="form-input search-input" 
+      />
+
+      <select [(ngModel)]="selectedTypeFilter" (change)="applyFilters()" class="form-input">
+        <option value="All">All Types</option>
+        <option *ngFor="let type of eventTypes" [value]="type">{{ type }}</option>
+      </select>
+
+      <select [(ngModel)]="selectedUserFilter" (change)="applyFilters()" class="form-input">
+        <option value="All">All Users</option>
+        <option value="Alex Morgan">Alex Morgan</option>
+        <option value="Sarah Jenkins">Sarah Jenkins</option>
+        <option value="Liam O'Connor">Liam O'Connor</option>
+      </select>
+    </div>
+
+    <div class="view-switcher">
+      <button [class.active]="viewMode === 'month'" (click)="setViewMode('month')">Month</button>
+      <button [class.active]="viewMode === 'week'" (click)="setViewMode('week')">Week</button>
+      <button [class.active]="viewMode === 'day'" (click)="setViewMode('day')">Day</button>
+      <button [class.active]="viewMode === 'agenda'" (click)="setViewMode('agenda')">Agenda</button>
+    </div>
+  </section>
+
+  <div class="calendar-workspace">
+    <!-- MAIN CALENDAR CANVAS -->
+    <main class="calendar-canvas">
+      
+      <!-- 1. MONTH VIEW -->
+      <div class="month-view-grid" *ngIf="viewMode === 'month'">
+        <div class="weekday-header" *ngFor="let day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">{{ day }}</div>
+        
+        <div 
+          class="month-day-cell" 
+          *ngFor="let cell of monthDays"
+          [class.other-month]="!cell.isCurrentMonth"
+          [class.today-cell]="cell.isToday"
+          (dragover)="onDragOver($event)"
+          (drop)="onDrop($event, cell.dateStr)"
+        >
+          <div class="cell-top">
+            <span class="day-number">{{ cell.dayNumber }}</span>
+          </div>
+
+          <div class="event-stack">
+            <div 
+              class="event-chip" 
+              *ngFor="let event of cell.events"
+              [ngClass]="[event.type.toLowerCase(), event.status.toLowerCase()]"
+              draggable="true"
+              (dragstart)="onDragStart($event, event.id)"
+              (click)="openEventDetails(event)"
+            >
+              <span class="time-prefix">{{ event.startTime }}</span>
+              <span class="chip-title">{{ event.title }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. WEEK VIEW -->
+      <div class="time-grid-wrapper" *ngIf="viewMode === 'week'">
+        <div class="time-grid-header">
+          <div class="time-column-header">GMT-5</div>
+          <div 
+            class="day-column-header" 
+            *ngFor="let day of weekDays"
+            [class.today-header]="day.isToday"
+          >
+            <span class="day-name">{{ day.dayName }}</span>
+            <span class="day-num">{{ day.dayNumber }}</span>
+          </div>
+        </div>
+
+        <div class="time-grid-body">
+          <div class="time-slot-row" *ngFor="let hour of hoursGrid">
+            <div class="time-label">{{ hour }}</div>
+            <div 
+              class="time-slot-cell" 
+              *ngFor="let day of weekDays"
+              (dragover)="onDragOver($event)"
+              (drop)="onDrop($event, day.dateStr)"
+            >
+              <div 
+                class="event-chip-slot" 
+                *ngFor="let event of getEventsForTimeSlot(day.dateStr, hour)"
+                [ngClass]="event.type.toLowerCase()"
+                (click)="openEventDetails(event)"
+              >
+                <strong>{{ event.title }}</strong>
+                <small>{{ event.startTime }} - {{ event.endTime }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. DAY VIEW -->
+      <div class="day-view-wrapper" *ngIf="viewMode === 'day'">
+        <div class="day-view-header">
+          <h3>{{ currentDate | date:'EEEE, MMMM d, yyyy' }}</h3>
+        </div>
+        <div class="time-grid-body">
+          <div class="time-slot-row" *ngFor="let hour of hoursGrid">
+            <div class="time-label">{{ hour }}</div>
+            <div 
+              class="time-slot-cell single-day"
+              (dragover)="onDragOver($event)"
+              (drop)="onDrop($event, formatDateIso(currentDate))"
+            >
+              <div 
+                class="event-card-day" 
+                *ngFor="let event of getEventsForTimeSlot(formatDateIso(currentDate), hour)"
+                [ngClass]="event.type.toLowerCase()"
+                (click)="openEventDetails(event)"
+              >
+                <div class="event-meta">
+                  <span class="type-badge">{{ event.type }}</span>
+                  <span>{{ event.startTime }} - {{ event.endTime }}</span>
+                </div>
+                <h4>{{ event.title }}</h4>
+                <p>{{ event.description }}</p>
+                <span *ngIf="event.relatedEntityName" class="entity-tag">🔗 {{ event.relatedEntityType }}: {{ event.relatedEntityName }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. AGENDA / LIST VIEW -->
+      <div class="agenda-view-wrapper" *ngIf="viewMode === 'agenda'">
+        <div class="agenda-list">
+          <div class="agenda-item" *ngFor="let event of filteredEvents" (click)="openEventDetails(event)">
+            <div class="agenda-date">
+              <span class="date-str">{{ event.startDate }}</span>
+              <span class="time-str">{{ event.startTime }} - {{ event.endTime }}</span>
+            </div>
+            <div class="agenda-indicator" [ngClass]="event.type.toLowerCase()"></div>
+            <div class="agenda-body">
+              <div class="agenda-title-row">
+                <h4>{{ event.title }}</h4>
+                <span class="status-pill" [ngClass]="event.status.toLowerCase()">{{ event.status }}</span>
+              </div>
+              <div class="agenda-details">
+                <span><strong>Type:</strong> {{ event.type }}</span>
+                <span *ngIf="event.relatedEntityName"><strong>Related:</strong> {{ event.relatedEntityType }} - {{ event.relatedEntityName }}</span>
+                <span><strong>Location:</strong> {{ event.locationOrLink }}</span>
+                <span><strong>Assignee:</strong> {{ event.assignedUser }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- SIDEBAR WITH UPCOMING & QUICK ACTION -->
+    <aside class="calendar-sidebar">
+      <div class="sidebar-card">
+        <h4>Today's Schedule</h4>
+        <div class="sidebar-event-list">
+          <div 
+            class="mini-event-card" 
+            *ngFor="let event of getEventsForDate(todayStr)"
+            (click)="openEventDetails(event)"
+          >
+            <span class="type-indicator" [ngClass]="event.type.toLowerCase()"></span>
+            <div>
+              <strong class="title">{{ event.title }}</strong>
+              <div class="time">{{ event.startTime }} ({{ event.durationMinutes }}m)</div>
+            </div>
+          </div>
+          <p *ngIf="getEventsForDate(todayStr).length === 0" class="empty-text">No events scheduled for today.</p>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h4>Legend</h4>
+        <div class="legend-list">
+          <div class="legend-item"><span class="box meeting"></span> Meeting</div>
+          <div class="legend-item"><span class="box call"></span> Call</div>
+          <div class="legend-item"><span class="box task"></span> Task</div>
+          <div class="legend-item"><span class="box follow-up"></span> Follow-up</div>
+          <div class="legend-item"><span class="box holiday"></span> Holiday</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- EVENT DETAILS SLIDE-OVER / MODAL -->
+  <div class="modal-backdrop" *ngIf="selectedEvent">
+    <div class="modal-card detail-card">
+      <div class="modal-header">
+        <span class="type-badge" [ngClass]="selectedEvent.type.toLowerCase()">{{ selectedEvent.type }}</span>
+        <button class="btn-icon" (click)="closeEventDetails()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <h2>{{ selectedEvent.title }}</h2>
+        <p class="status-subtitle">Status: <strong [ngClass]="selectedEvent.status.toLowerCase()">{{ selectedEvent.status }}</strong></p>
+
+        <div class="info-group">
+          <p>📅 <strong>Date:</strong> {{ selectedEvent.startDate }} ({{ selectedEvent.startTime }} - {{ selectedEvent.endTime }})</p>
+          <p>📍 <strong>Location / Link:</strong> <a [href]="selectedEvent.locationOrLink" target="_blank">{{ selectedEvent.locationOrLink }}</a></p>
+          <p *ngIf="selectedEvent.relatedEntityName">🔗 <strong>Related To:</strong> {{ selectedEvent.relatedEntityType }} - {{ selectedEvent.relatedEntityName }}</p>
+          <p>👤 <strong>Assigned User:</strong> {{ selectedEvent.assignedUser }}</p>
+          <p>🔔 <strong>Reminder:</strong> {{ selectedEvent.reminderMinutesBefore }} minutes before</p>
+        </div>
+
+        <div class="description-block">
+          <h4>Description</h4>
+          <p>{{ selectedEvent.description || 'No detailed description provided.' }}</p>
+        </div>
+
+        <div class="participants-block" *ngIf="selectedEvent.participants.length > 0">
+          <h4>Participants</h4>
+          <div class="participants-list">
+            <div *ngFor="let p of selectedEvent.participants" class="participant-pill">
+              <span class="avatar-sm">{{ p.avatar }}</span>
+              <span>{{ p.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelEvent(selectedEvent)">Cancel Event</button>
+        <button class="btn btn-primary" (click)="markEventCompleted(selectedEvent)">Mark Completed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE EVENT MODAL -->
+  <div class="modal-backdrop" *ngIf="showCreateModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create {{ newEvent.type }}</h3>
+        <button class="btn-icon" (click)="showCreateModal = false">✕</button>
+      </div>
+
+      <div class="modal-form">
+        <label>Title</label>
+        <input type="text" [(ngModel)]="newEvent.title" placeholder="e.g. Sales Demo Sync" class="form-input" />
+
+        <div class="form-row">
+          <div>
+            <label>Event Type</label>
+            <select [(ngModel)]="newEvent.type" class="form-input">
+              <option *ngFor="let t of eventTypes" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <div>
+            <label>Assigned User</label>
+            <input type="text" [(ngModel)]="newEvent.assignedUser" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Start Date</label>
+            <input type="date" [(ngModel)]="newEvent.startDate" class="form-input" />
+          </div>
+          <div>
+            <label>Start Time</label>
+            <input type="time" [(ngModel)]="newEvent.startTime" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Related Entity</label>
+            <select [(ngModel)]="newEvent.relatedEntityType" class="form-input">
+              <option *ngFor="let e of entityTypes" [value]="e">{{ e }}</option>
+            </select>
+          </div>
+          <div>
+            <label>Entity Name</label>
+            <input type="text" [(ngModel)]="newEvent.relatedEntityName" placeholder="e.g. Apex Logistics" class="form-input" />
+          </div>
+        </div>
+
+        <label>Location / Video Link</label>
+        <input type="text" [(ngModel)]="newEvent.locationOrLink" placeholder="Google Meet link or address" class="form-input" />
+
+        <label>Description</label>
+        <textarea [(ngModel)]="newEvent.description" class="form-input text-area"></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showCreateModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="saveNewEvent()">Save Event</button>
+      </div>
+    </div>
+  </div>
+</div>

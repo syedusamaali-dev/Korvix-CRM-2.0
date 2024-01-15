@@ -1,0 +1,182 @@
+$primary: #6366f1;
+$primary-hover: #4f46e5;
+$bg-main: #f8fafc;
+$bg-surface: #ffffff;
+$border-color: #e2e8f0;
+$text-main: #0f172a;
+$text-muted: #64748b;
+$danger: #ef4444;
+
+/* Event Colors */
+$color-meeting: #3b82f6;
+$color-call: #10b981;
+$color-task: #f59e0b;
+$color-followup: #8b5cf6;
+$color-holiday: #ec4899;
+
+.calendar-module {
+  padding: 1.5rem;
+  background-color: $bg-main;
+  color: $text-main;
+  font-family: system-ui, -apple-system, sans-serif;
+
+  .module-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+    .subtitle { color: $text-muted; font-size: 0.875rem; margin: 0; }
+  }
+
+  /* KPI Banner */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;
+    .kpi-card {
+      background: $bg-surface; border: 1px solid $border-color; padding: 1rem; border-radius: 8px; display: flex; flex-direction: column;
+      .kpi-title { font-size: 0.75rem; text-transform: uppercase; color: $text-muted; font-weight: 600; }
+      .kpi-value { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+      &.highlight-today { border-left: 4px solid $primary; }
+      .text-primary { color: $primary; }
+      .info-text { color: $color-meeting; }
+      .warning-text { color: $color-task; }
+      .text-purple { color: $color-followup; }
+      .success-text { color: $color-call; }
+    }
+  }
+
+  /* Toolbar */
+  .toolbar-card {
+    background: $bg-surface; border: 1px solid $border-color; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    .navigation-group { display: flex; align-items: center; gap: 0.75rem; h3 { margin: 0; font-size: 1.1rem; } }
+    .filters-group { display: flex; gap: 0.75rem; }
+    .view-switcher {
+      display: flex; border: 1px solid $border-color; border-radius: 6px; overflow: hidden;
+      button { padding: 0.4rem 0.8rem; border: none; background: white; cursor: pointer; font-size: 0.85rem; &.active { background: $primary; color: white; } }
+    }
+  }
+
+  .form-input { padding: 0.5rem; border: 1px solid $border-color; border-radius: 6px; background: white; &.search-input { min-width: 220px; } }
+  .text-area { width: 100%; min-height: 70px; resize: vertical; }
+
+  .calendar-workspace { display: grid; grid-template-columns: 1fr 260px; gap: 1.5rem; }
+
+  /* MONTH GRID */
+  .month-view-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: $border-color; border: 1px solid $border-color; border-radius: 8px; overflow: hidden;
+    .weekday-header { background: #f8fafc; padding: 0.5rem; text-align: center; font-weight: 600; font-size: 0.8rem; color: $text-muted; }
+    .month-day-cell {
+      background: white; min-height: 110px; padding: 0.4rem; display: flex; flex-direction: column;
+      &.other-month { background: #f8fafc; color: #cbd5e1; }
+      &.today-cell { background: #eff6ff; }
+      .day-number { font-weight: 700; font-size: 0.8rem; margin-bottom: 0.25rem; }
+      .event-stack { display: flex; flex-direction: column; gap: 0.25rem; }
+    }
+  }
+
+  /* EVENT CHIPS */
+  .event-chip {
+    padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: white; cursor: pointer; display: flex; gap: 0.3rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    &.meeting { background: $color-meeting; }
+    &.call { background: $color-call; }
+    &.task { background: $color-task; }
+    &.follow-up { background: $color-followup; }
+    &.holiday { background: $color-holiday; }
+    &.completed { opacity: 0.6; text-decoration: line-through; }
+    .time-prefix { font-weight: 700; font-size: 0.7rem; }
+  }
+
+  /* TIME GRID (WEEK & DAY) */
+  .time-grid-wrapper { background: white; border: 1px solid $border-color; border-radius: 8px; overflow: hidden; }
+  .time-grid-header {
+    display: grid; grid-template-columns: 60px repeat(7, 1fr); border-bottom: 1px solid $border-color; background: #f8fafc;
+    .time-column-header { padding: 0.5rem; font-size: 0.7rem; color: $text-muted; text-align: center; border-right: 1px solid $border-color; }
+    .day-column-header {
+      padding: 0.5rem; text-align: center; border-right: 1px solid $border-color; display: flex; flex-direction: column;
+      &.today-header { background: #eff6ff; color: $primary; font-weight: 700; }
+    }
+  }
+  .time-grid-body {
+    max-height: 600px; overflow-y: auto;
+    .time-slot-row {
+      display: grid; grid-template-columns: 60px repeat(7, 1fr); border-bottom: 1px solid #f1f5f9; min-height: 48px;
+      .time-label { padding: 0.25rem; font-size: 0.7rem; color: $text-muted; text-align: center; border-right: 1px solid $border-color; }
+      .time-slot-cell {
+        border-right: 1px solid #f1f5f9; padding: 0.1rem;
+        &.single-day { grid-column: span 7; }
+      }
+    }
+  }
+
+  /* AGENDA VIEW */
+  .agenda-view-wrapper {
+    background: white; border: 1px solid $border-color; border-radius: 8px; padding: 1rem;
+    .agenda-item {
+      display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+      .agenda-date { min-width: 140px; display: flex; flex-direction: column; font-size: 0.85rem; color: $text-muted; }
+      .agenda-indicator {
+        width: 4px; border-radius: 2px;
+        &.meeting { background: $color-meeting; }
+        &.call { background: $color-call; }
+        &.task { background: $color-task; }
+        &.follow-up { background: $color-followup; }
+      }
+      .agenda-body { flex: 1; h4 { margin: 0 0 0.25rem 0; } .agenda-details { display: flex; gap: 1rem; font-size: 0.8rem; color: $text-muted; } }
+    }
+  }
+
+  /* SIDEBAR */
+  .calendar-sidebar {
+    display: flex; flex-direction: column; gap: 1rem;
+    .sidebar-card {
+      background: white; border: 1px solid $border-color; border-radius: 8px; padding: 1rem;
+      h4 { margin: 0 0 0.75rem 0; font-size: 0.9rem; }
+      .mini-event-card {
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+        .type-indicator {
+          width: 8px; height: 8px; border-radius: 50%;
+          &.meeting { background: $color-meeting; }
+          &.call { background: $color-call; }
+          &.task { background: $color-task; }
+        }
+        .time { font-size: 0.75rem; color: $text-muted; }
+      }
+      .legend-list {
+        display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.8rem;
+        .legend-item { display: flex; align-items: center; gap: 0.5rem; }
+        .box {
+          width: 12px; height: 12px; border-radius: 3px;
+          &.meeting { background: $color-meeting; }
+          &.call { background: $color-call; }
+          &.task { background: $color-task; }
+          &.follow-up { background: $color-followup; }
+          &.holiday { background: $color-holiday; }
+        }
+      }
+    }
+  }
+
+  /* MODALS & BUTTONS */
+  .btn {
+    padding: 0.5rem 1rem; border-radius: 6px; border: none; font-weight: 500; cursor: pointer;
+    &-primary { background: $primary; color: white; }
+    &-secondary { background: white; border: 1px solid $border-color; color: $text-main; }
+  }
+  .btn-icon { background: none; border: none; cursor: pointer; font-size: 1rem; }
+
+  .modal-backdrop {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 1000;
+    .modal-card {
+      background: white; padding: 1.5rem; border-radius: 8px; width: 460px;
+      .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+      .modal-form { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; label { font-size: 0.8rem; font-weight: 600; color: $text-muted; } }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem; }
+    }
+  }
+
+  .type-badge {
+    padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: white; text-transform: uppercase;
+    &.meeting { background: $color-meeting; }
+    &.call { background: $color-call; }
+    &.task { background: $color-task; }
+    &.follow-up { background: $color-followup; }
+  }
+}
