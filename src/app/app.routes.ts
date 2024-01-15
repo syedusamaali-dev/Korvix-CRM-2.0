@@ -38,8 +38,8 @@ export const routes: Routes = [
         loadChildren: () => import('./views/deals/routes').then((m) => m.routes)
       },
       {
-        path: 'notifications',
-        loadChildren: () => import('./views/notifications/routes').then((m) => m.routes)
+        path: 'tasks',
+        loadChildren: () => import('./views/tasks/routes').then((m) => m.routes)
       },
       {
         path: 'widgets',
