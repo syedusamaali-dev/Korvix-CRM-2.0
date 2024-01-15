@@ -1,1 +1,214 @@
-<p>reports works!</p>
+<div class="reports-module">
+  <!-- Module Header -->
+  <header class="module-header">
+    <div>
+      <h2>Analytics & Business Intelligence</h2>
+      <p class="subtitle">Real-time revenue metrics, pipeline performance, team KPIs, and conversion velocity.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="onFilterChange()" [disabled]="isRefreshing">
+        {{ isRefreshing ? 'Refreshing...' : '🔄 Refresh' }}
+      </button>
+      <div class="dropdown-export">
+        <button class="btn btn-primary">📥 Export Report ▾</button>
+        <div class="dropdown-content">
+          <a (click)="exportData('PDF')">Export as PDF</a>
+          <a (click)="exportData('Excel')">Export as Excel</a>
+          <a (click)="exportData('CSV')">Export as CSV</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toolbar & Global Filters -->
+  <section class="toolbar-card">
+    <div class="filter-group">
+      <label>Date Range:</label>
+      <select [(ngModel)]="selectedDateRange" (change)="onFilterChange()" class="form-input">
+        <option value="this_month">This Month (July 2026)</option>
+        <option value="last_month">Last Month</option>
+        <option value="this_quarter">This Quarter (Q3)</option>
+        <option value="this_year">Year to Date (2026)</option>
+      </select>
+    </div>
+
+    <div class="category-tabs">
+      <button 
+        *ngFor="let cat of ['Sales', 'Revenue', 'Customer', 'Lead', 'Deal Pipeline', 'Team Performance']"
+        [class.active]="selectedCategory === cat"
+        (click)="selectedCategory = $any(cat)"
+      >
+        {{ cat }}
+      </button>
+    </div>
+  </section>
+
+  <!-- Top KPI Cards -->
+  <section class="kpi-grid">
+    <div class="kpi-card highlight">
+      <span class="kpi-title">Total Revenue</span>
+      <span class="kpi-value text-primary">${{ totalRevenue | number }}</span>
+      <span class="kpi-trend positive">+{{ monthlyGrowthPct }}% vs last month</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Total Sales Closed</span>
+      <span class="kpi-value">{{ totalSalesCount }}</span>
+      <span class="kpi-trend positive">+5 deals</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">New Customers</span>
+      <span class="kpi-value info-text">{{ newCustomersCount }}</span>
+      <span class="kpi-trend positive">+12% growth</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Conversion Rate</span>
+      <span class="kpi-value warning-text">{{ conversionRatePct }}%</span>
+      <span class="kpi-trend neutral">Stable</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Active Pipeline Deals</span>
+      <span class="kpi-value text-purple">{{ activeDealsCount }}</span>
+      <span class="kpi-subtext">$1.2M pipeline value</span>
+    </div>
+  </section>
+
+  <!-- Main Analytics Grid -->
+  <div class="dashboard-grid">
+    
+    <!-- 1. Revenue Trajectory (Interactive SVG Line Chart) -->
+    <div class="dashboard-card chart-card full-width" *ngIf="selectedCategory === 'Sales' || selectedCategory === 'Revenue'">
+      <div class="card-header">
+        <h3>Revenue Growth Trajectory ($ USD)</h3>
+        <span class="badge">Monthly Sync</span>
+      </div>
+      <div class="svg-chart-container">
+        <svg viewBox="0 0 500 200" class="svg-line-chart">
+          <!-- Horizontal Gridlines -->
+          <line x1="0" y1="40" x2="500" y2="40" class="grid-line" />
+          <line x1="0" y1="90" x2="500" y2="90" class="grid-line" />
+          <line x1="0" y1="140" x2="500" y2="140" class="grid-line" />
+
+          <!-- Trend Polyline -->
+          <polyline
+            fill="none"
+            stroke="#6366f1"
+            stroke-width="3"
+            [attr.points]="getSvgPolylinePoints()"
+          />
+
+          <!-- Interactive Data Points -->
+          <g *ngFor="let d of revenueChartData; let i = index">
+            <circle
+              [attr.cx]="(i / (revenueChartData.length - 1)) * 500"
+              [attr.cy]="180 - ((d.value / 115000) * 160)"
+              r="6"
+              class="chart-dot"
+              (click)="triggerDrilldown('Monthly Revenue Detail: ' + d.label, d)"
+            />
+            <text 
+              [attr.x]="(i / (revenueChartData.length - 1)) * 500" 
+              y="198" 
+              class="chart-label" 
+              text-anchor="middle"
+            >
+              {{ d.label }}
+            </text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 2. Pipeline Conversion Funnel -->
+    <div class="dashboard-card" *ngIf="selectedCategory === 'Sales' || selectedCategory === 'Deal Pipeline'">
+      <div class="card-header">
+        <h3>Deal Pipeline Conversion Funnel</h3>
+      </div>
+      <div class="funnel-container">
+        <div class="funnel-stage" *ngFor="let stage of pipelineFunnel" (click)="triggerDrilldown('Funnel Stage: ' + stage.stage, stage)">
+          <div class="stage-label-group">
+            <span class="stage-name">{{ stage.stage }}</span>
+            <span class="stage-count">{{ stage.count }} Deals ({{ stage.conversionPct }}%)</span>
+          </div>
+          <div class="funnel-bar-wrapper">
+            <div class="funnel-bar-fill" [style.width.%]="stage.conversionPct"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Lead Source Attribution (Pie/Distribution) -->
+    <div class="dashboard-card" *ngIf="selectedCategory === 'Sales' || selectedCategory === 'Lead'">
+      <div class="card-header">
+        <h3>Lead Source Attribution</h3>
+      </div>
+      <div class="lead-sources-list">
+        <div class="source-item" *ngFor="let source of leadSourceData" (click)="triggerDrilldown('Source Details: ' + source.label, source)">
+          <div class="source-info">
+            <span class="source-name">{{ source.label }}</span>
+            <span class="source-value">{{ source.value }} Leads</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="(source.value / 100) * 100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Team Performance Table -->
+    <div class="dashboard-card full-width" *ngIf="selectedCategory === 'Team Performance' || selectedCategory === 'Sales'">
+      <div class="card-header">
+        <h3>Sales Rep Target vs Achievement</h3>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Salesperson</th>
+            <th>Deals Closed</th>
+            <th>Revenue Generated</th>
+            <th>Quota Attainment</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rep of teamPerformance" (click)="triggerDrilldown('Rep Performance: ' + rep.salesperson, rep)" class="clickable-row">
+            <td class="user-cell">
+              <span class="avatar">{{ rep.avatar }}</span>
+              <span class="name">{{ rep.salesperson }}</span>
+            </td>
+            <td><strong>{{ rep.dealsClosed }}</strong></td>
+            <td>${{ rep.totalRevenue | number }}</td>
+            <td>
+              <div class="attainment-bar">
+                <div class="bar-fill" [style.width.%]="rep.targetAchievedPct > 100 ? 100 : rep.targetAchievedPct" [class.overachieved]="rep.targetAchievedPct >= 100"></div>
+                <span class="pct-text">{{ rep.targetAchievedPct }}%</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-pill" [class.success]="rep.targetAchievedPct >= 100" [class.warning]="rep.targetAchievedPct < 100">
+                {{ rep.targetAchievedPct >= 100 ? 'Exceeded' : 'On Track' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Interactive Drilldown Modal -->
+  <div class="modal-backdrop" *ngIf="selectedDrilldown">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ selectedDrilldown.title }}</h3>
+        <button class="btn-icon" (click)="closeDrilldown()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Inspected Data Payload:</strong></p>
+        <pre class="json-preview">{{ selectedDrilldown.data | json }}</pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDrilldown()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
