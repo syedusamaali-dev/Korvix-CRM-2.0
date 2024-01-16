@@ -1,14 +1,17 @@
+<!-- Top Quick Metrics Widgets -->
 <app-widgets-dropdown />
-<c-card class="my-4">
+
+<!-- Main Revenue & Deal Velocity Chart -->
+<c-card class="my-4 shadow-sm">
   <c-card-body>
     <c-row>
       <c-col sm="5">
-        <h4 class="card-title mb-0" id="traffic">Traffic</h4>
-        <div class="small text-body-secondary">January - December 2023</div>
+        <h4 class="card-title mb-0" id="traffic">Revenue Velocity & Target Forecast</h4>
+        <div class="small text-body-secondary">Korvix CRM Real-time Pipeline Performance</div>
       </c-col>
       <c-col class="d-none d-md-block" sm="7">
-        <button cButton class="float-end" color="primary" aria-label="Download">
-          <svg cIcon name="cilCloudDownload"></svg>
+        <button cButton class="float-end btn-primary" color="primary" aria-label="Export Data">
+          <svg cIcon name="cilCloudDownload"></svg> Export CSV
         </button>
         <form [formGroup]="trafficRadioGroup">
           <c-button-group class="float-end me-3" role="group">
@@ -29,6 +32,7 @@
             >
               Day
             </label>
+
             <input
               class="btn-check"
               formControlName="trafficRadio"
@@ -46,6 +50,7 @@
             >
               Month
             </label>
+
             <input
               class="btn-check"
               formControlName="trafficRadio"
@@ -67,250 +72,152 @@
         </form>
       </c-col>
     </c-row>
+
+    <!-- Main Dynamic Chart -->
     <c-chart
       [data]="mainChart.data"
       [height]="300"
-      [style.marginTop.px]="40"
+      [style.marginTop.px]="30"
       [options]="mainChart.options"
       [type]="mainChart.type"
       (chartRef)="handleChartRef($event)"
     >
-      Main chart
+      Main CRM Analytics Chart
     </c-chart>
   </c-card-body>
+
+  <!-- Key CRM Funnel Conversion Progress Summary -->
   <c-card-footer>
     <c-row class="text-center mb-2" [xl]="5" [lg]="4" [sm]="2" [xs]="1" [gutter]="4">
       <c-col>
-        <div class="text-body-secondary">Visits</div>
-        <strong>29.703 Users (40%)</strong>
-        <c-progress class="mt-2" thin color="success" value="40" aria-label="User visits" />
+        <div class="text-body-secondary">New Inbound Leads</div>
+        <strong>240 Leads (66% Qual.)</strong>
+        <c-progress class="mt-2" thin color="success" value="66" aria-label="Lead qualification" />
       </c-col>
       <c-col>
-        <div class="text-body-secondary">Unique</div>
-        <div class="fw-semibold text-truncate">24.093 Users (20%)</div>
-        <c-progress class="mt-2" thin color="info" value="20" aria-label="Unique users" />
+        <div class="text-body-secondary">Proposals Sent</div>
+        <div class="fw-semibold text-truncate">90 Proposals (37.5%)</div>
+        <c-progress class="mt-2" thin color="info" value="37" aria-label="Proposals progress" />
       </c-col>
       <c-col>
-        <div class="text-body-secondary">Page views</div>
-        <div class="fw-semibold text-truncate">78.706 Views (60%)</div>
-        <c-progress class="mt-2" thin color="warning" value="60" aria-label="Page views" />
+        <div class="text-body-secondary">In Negotiation</div>
+        <div class="fw-semibold text-truncate">45 Active Deals</div>
+        <c-progress class="mt-2" thin color="warning" value="45" aria-label="Deals in negotiation" />
       </c-col>
       <c-col>
-        <div class="text-body-secondary">New Users</div>
-        <div class="fw-semibold text-truncate">22.123 Users (80%)</div>
-        <c-progress class="mt-2" thin color="danger" value="80" aria-label="New users" />
+        <div class="text-body-secondary">Closed Won</div>
+        <div class="fw-semibold text-truncate">32 Deals (13.3%)</div>
+        <c-progress class="mt-2" thin color="danger" value="80" aria-label="Closed won conversion" />
       </c-col>
       <c-col class="d-none d-xl-block">
-        <div class="text-body-secondary">Bounce Rate</div>
-        <div class="fw-semibold text-truncate">Average Rate (40.15%)</div>
-        <c-progress class="mt-2" thin value="40" aria-label="Bounce rate" />
+        <div class="text-body-secondary">Churn / Lost Rate</div>
+        <div class="fw-semibold text-truncate">Low Rate (4.2%)</div>
+        <c-progress class="mt-2" thin color="secondary" value="12" aria-label="Churn rate" />
       </c-col>
     </c-row>
   </c-card-footer>
 </c-card>
 
+<!-- Secondary Brand & Campaign Performance Widgets -->
 <app-widgets-brand [withCharts]="true" />
 
+<!-- Lead Acquisition Channels & Source Performance -->
 <c-row class="mt-4">
   <c-col xs>
     <c-card class="mb-4">
-      <c-card-header>Traffic {{ "&" }} Sales</c-card-header>
+      <c-card-header>Lead Acquisition Sources & Inbound Channels</c-card-header>
       <c-card-body>
         <c-row>
+          <!-- Left Side: Inbound vs Outbound Client Split -->
           <c-col md="6" xl="6" xs="12">
             <c-row>
               <c-col xs="6">
                 <div class="border-start border-start-4 border-start-info py-1 px-3 mb-3">
-                  <div class="text-body-secondary text-truncate small">New Clients</div>
-                  <div class="fs-5 fw-semibold">9,123</div>
+                  <div class="text-body-secondary text-truncate small">New Inbound Clients</div>
+                  <div class="fs-5 fw-semibold">1,240</div>
                 </div>
               </c-col>
               <c-col xs="6">
                 <div class="border-start border-start-4 border-start-danger py-1 px-3 mb-3">
-                  <div class="text-body-secondary text-truncate small">
-                    Recurring Clients
-                  </div>
-                  <div class="fs-5 fw-semibold">22,643</div>
+                  <div class="text-body-secondary text-truncate small">Outbound / Expansion</div>
+                  <div class="fs-5 fw-semibold">3,810</div>
                 </div>
               </c-col>
             </c-row>
             <hr class="mt-0" />
-            <div class="progress-group mb-4">
+
+            <!-- Daily Lead Volume Progress Bar Breakdown -->
+            <div class="progress-group mb-3" *ngFor="let day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']">
               <div class="progress-group-prepend">
-                <span class="text-body-secondary small">Monday</span>
+                <span class="text-body-secondary small">{{ day }}</span>
               </div>
               <div class="progress-group-bars">
-                <c-progress thin color="info" value="34" aria-label="Monday new clients" />
-                <c-progress thin color="danger" value="78" aria-label="Monday recurring clients" />
+                <c-progress thin color="info" value="42" aria-label="Inbound" />
+                <c-progress thin color="danger" value="78" aria-label="Outbound" />
               </div>
             </div>
-            <div class="progress-group mb-4">
-              <div class="progress-group-prepend">
-                <span class="text-body-secondary small">Tuesday</span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="info" value="56" aria-label="Tuesday new clients" />
-                <c-progress thin color="danger" value="94" aria-label="Tuesday recurring clients" />
-              </div>
-            </div>
-            <div class="progress-group mb-4">
-              <div class="progress-group-prepend">
-                <span class="text-body-secondary small">Wednesday</span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="info" value="12" aria-label="Wednesday new clients" />
-                <c-progress thin color="danger" value="67" aria-label="Wednesday recurring clients" />
-              </div>
-            </div>
-            <div class="progress-group mb-4">
-              <div class="progress-group-prepend">
-                <span class="text-body-secondary small">Thursday</span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="info" value="43" aria-label="Thursday new clients" />
-                <c-progress thin color="danger" value="91" aria-label="Thursday recurring clients" />
-              </div>
-            </div>
-            <div class="progress-group mb-4">
-              <div class="progress-group-prepend">
-                <span class="text-body-secondary small">Friday</span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="info" value="22" aria-label="Friday new clients" />
-                <c-progress thin color="danger" value="73" aria-label="Friday recurring clients" />
-              </div>
-            </div>
-            <div class="progress-group mb-4">
-              <div class="progress-group-prepend">
-                <span class="text-body-secondary small">Saturday</span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="info" value="53" aria-label="Saturday new clients" />
-                <c-progress thin color="danger" value="82" aria-label="Saturday recurring clients" />
-              </div>
-            </div>
-            <div class="progress-group mb-4">
-              <div class="progress-group-prepend">
-                <span class="text-body-secondary small">Sunday</span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="info" value="9" aria-label="Sunday new clients" />
-                <c-progress thin color="danger" value="69" aria-label="Sunday recurring clients" />
-              </div>
-            </div>
-            <div class="legend text-center d-none d-md-block" ngPreserveWhitespaces>
+            
+            <div class="legend text-center mt-3 d-none d-md-block">
               <small>
-                <sup>
-                  <span class="badge badge-pill badge-sm bg-info">&nbsp;</span>
-                </sup>
-                <span>New clients</span>
+                <span class="badge bg-info me-1">&nbsp;</span>
+                <span>Inbound Web</span>
                 &nbsp;&nbsp;
-                <sup>
-                  <span class="badge badge-pill badge-sm bg-danger">&nbsp;</span>
-                </sup>
-                <span>Recurring clients</span>
+                <span class="badge bg-danger me-1">&nbsp;</span>
+                <span>Outbound Campaign</span>
               </small>
             </div>
           </c-col>
 
+          <!-- Right Side: Channel Source Metrics -->
           <c-col md="6" xl="6" xs="12">
             <c-row>
               <c-col xs="6">
                 <div class="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
-                  <div class="text-body-secondary text-truncate small">Page views</div>
-                  <div class="fs-5 fw-semibold">78,623</div>
+                  <div class="text-body-secondary text-truncate small">LinkedIn InMail Leads</div>
+                  <div class="fs-5 fw-semibold">42.8%</div>
                 </div>
               </c-col>
               <c-col xs="6">
                 <div class="border-start border-start-4 border-start-success py-1 px-3 mb-3">
-                  <div class="text-body-secondary text-truncate small">Organic</div>
-                  <div class="fs-5 fw-semibold">49,123</div>
+                  <div class="text-body-secondary text-truncate small">Organic Search Conversion</div>
+                  <div class="fs-5 fw-semibold">56.1%</div>
                 </div>
               </c-col>
             </c-row>
 
             <hr class="mt-0" />
 
-            <div class="progress-group mb-4">
+            <div class="progress-group mb-3">
               <div class="progress-group-header">
-                <svg cIcon class="icon icon-lg me-2" name="cilUser"></svg>
-                <span>Male</span>
-                <span class="ms-auto font-semibold">43%</span>
+                <svg cIcon class="icon icon-lg me-2" name="cibGoogle"></svg>
+                <span>Organic Google Search</span>
+                <span class="ms-auto font-semibold">184 Leads <span class="text-body-secondary small">(56%)</span></span>
               </div>
               <div class="progress-group-bars">
-                <c-progress thin color="warning" value="43" aria-label="Male users" />
-              </div>
-            </div>
-            <div class="progress-group mb-5">
-              <div class="progress-group-header">
-                <svg cIcon class="icon icon-lg me-2" name="cilUserFemale"></svg>
-                <span>Female</span>
-                <span class="ms-auto font-semibold">37%</span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="warning" value="37" aria-label="Feale users" />
+                <c-progress thin color="success" value="56" aria-label="Google search" />
               </div>
             </div>
 
-            <div class="progress-group">
-              <div class="progress-group-header">
-                <svg cIcon class="icon icon-lg me-2" name="cibGoogle"></svg>
-                <span>Organic Search</span>
-                <span class="ms-auto font-semibold">
-                  191,235 <span class="text-body-secondary small">(56%)</span>
-                </span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="success" value="56" aria-label="Organic search" />
-              </div>
-            </div>
-            <div class="progress-group">
-              <div class="progress-group-header">
-                <svg cIcon class="icon icon-lg me-2" name="cibFacebook"></svg>
-                <span>Facebook</span>
-                <span class="ms-auto font-semibold">
-                  51,223 <span class="text-body-secondary small">(15%)</span>
-                </span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="success" value="15" aria-label="Facebook" />
-              </div>
-            </div>
-            <div class="progress-group">
-              <div class="progress-group-header">
-                <svg cIcon class="icon icon-lg me-2" name="cibTwitter"></svg>
-                <span>Twitter</span>
-                <span class="ms-auto font-semibold">
-                  37,564 <span class="text-body-secondary small">(11%)</span>
-                </span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="success" value="11" aria-label="Twitter" />
-              </div>
-            </div>
-            <div class="progress-group">
+            <div class="progress-group mb-3">
               <div class="progress-group-header">
                 <svg cIcon class="icon icon-lg me-2" name="cibLinkedin"></svg>
-                <span>LinkedIn</span>
-                <span class="ms-auto font-semibold">
-                  27,319 <span class="text-body-secondary small">(8%)</span>
-                </span>
+                <span>LinkedIn Ads & Outreach</span>
+                <span class="ms-auto font-semibold">92 Leads <span class="text-body-secondary small">(28%)</span></span>
               </div>
               <div class="progress-group-bars">
-                <c-progress thin color="success" value="8" aria-label="LinkedIn" />
+                <c-progress thin color="info" value="28" aria-label="LinkedIn" />
               </div>
             </div>
-            <div class="divider d-flex justify-content-center">
-              <button
-                cButton
-                class="text-muted btn-link"
-                color="transparent"
-                size="sm"
-                type="button"
-                aria-label="Options"
-              >
-                <svg cIcon name="cil-options"></svg>
-              </button>
+
+            <div class="progress-group mb-3">
+              <div class="progress-group-header">
+                <svg cIcon class="icon icon-lg me-2" name="cibFacebook"></svg>
+                <span>Meta Campaigns</span>
+                <span class="ms-auto font-semibold">32 Leads <span class="text-body-secondary small">(10%)</span></span>
+              </div>
+              <div class="progress-group-bars">
+                <c-progress thin color="warning" value="10" aria-label="Meta campaigns" />
+              </div>
             </div>
           </c-col>
         </c-row>
@@ -318,9 +225,12 @@
     </c-card>
   </c-col>
 </c-row>
+
+<!-- Sales Team Performance & Quota Table -->
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
+      <c-card-header>Active Account Reps & Quota Performance</c-card-header>
       <c-card-body>
         <table
           [hover]="true"
@@ -331,59 +241,54 @@
           class="mb-0 border"
         >
           <thead class="text-nowrap text-truncate">
-          <tr>
-            <th class="bg-body-tertiary text-center ">
-              <svg cIcon name="cilPeople"></svg>
-            </th>
-            <th class="bg-body-tertiary">User</th>
-            <th class="bg-body-tertiary text-center">Country</th>
-            <th class="bg-body-tertiary">Usage</th>
-            <th class="bg-body-tertiary text-center">Payment Method</th>
-            <th class="bg-body-tertiary">Activity</th>
-          </tr>
+            <tr>
+              <th class="bg-body-tertiary text-center">
+                <svg cIcon name="cilPeople"></svg>
+              </th>
+              <th class="bg-body-tertiary">Account Rep</th>
+              <th class="bg-body-tertiary text-center">Region</th>
+              <th class="bg-body-tertiary">Quota Target Attainment</th>
+              <th class="bg-body-tertiary text-center">Account Tier</th>
+              <th class="bg-body-tertiary">Last Activity</th>
+            </tr>
           </thead>
           <tbody>
-            @for (user of users; track user.name; let i = $index) {
+            @for (rep of salesReps; track rep.name) {
               <tr>
                 <td class="text-center">
-                  <c-avatar size="md" src="{{ user.avatar }}" status="{{ user.status }}" />
+                  <c-avatar size="md" [src]="rep.avatar" [status]="rep.status" />
                 </td>
                 <td>
-                  <div>{{ user.name }}</div>
+                  <div class="fw-semibold">{{ rep.name }}</div>
                   <div class="small text-body-secondary text-nowrap">
-                  <span>
-                    {{ user.state }} | Registered: {{ user.registered }}
-                  </span>
+                    <span>{{ rep.role }} | {{ rep.assignedLeads }} Active Leads</span>
                   </div>
                 </td>
                 <td class="text-center">
                   <svg
                     cIcon
-                    id="{{ user.country + user.name }}"
-                    name="cif{{ user.country }}"
+                    [name]="'cif' + rep.region"
                     size="xl"
-                    title="{{ user.country }}"
+                    [title]="rep.region"
                   ></svg>
                 </td>
                 <td>
                   <div class="d-flex justify-content-between">
                     <div class="float-start">
-                      <strong>{{ user.usage }}%</strong>
+                      <strong>{{ rep.quotaAttainmentPct }}%</strong>
                     </div>
                     <div class="float-end ms-1 text-nowrap">
-                      <small class="text-body-secondary">
-                        {{ user.period }}
-                      </small>
+                      <small class="text-body-secondary">Avg {{ rep.dealVelocityDays }} days / deal</small>
                     </div>
                   </div>
-                  <c-progress thin [value]="user.usage" color="{{ user.color }}" aria-label="Usage" />
+                  <c-progress thin [value]="rep.quotaAttainmentPct > 100 ? 100 : rep.quotaAttainmentPct" [color]="rep.progressColor" aria-label="Quota attainment" />
                 </td>
                 <td class="text-center">
-                  <svg cIcon name="cibCc{{ user.payment }}" size="xl"></svg>
+                  <span class="badge bg-light text-dark border">{{ rep.paymentTier }}</span>
                 </td>
                 <td>
-                  <div class="small text-body-secondary">Last login</div>
-                  <div class="fw-semibold text-nowrap">{{ user.activity }}</div>
+                  <div class="small text-body-secondary">Last Sync</div>
+                  <div class="fw-semibold text-nowrap">{{ rep.lastActive }}</div>
                 </td>
               </tr>
             }

@@ -23,121 +23,117 @@ import { WidgetsBrandComponent } from '../widgets/widgets-brand/widgets-brand.co
 import { WidgetsDropdownComponent } from '../widgets/widgets-dropdown/widgets-dropdown.component';
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
 
-interface IUser {
+export interface ISalesRepPerformance {
   name: string;
-  state: string;
-  registered: string;
-  country: string;
-  usage: number;
-  period: string;
-  payment: string;
-  activity: string;
+  role: string;
+  assignedLeads: number;
+  dealVelocityDays: number;
+  quotaAttainmentPct: number;
+  region: string;
+  paymentTier: string;
+  lastActive: string;
   avatar: string;
-  status: string;
-  color: string;
+  status: 'success' | 'danger' | 'warning' | 'info' | 'secondary';
+  progressColor: string;
 }
 
 @Component({
-  templateUrl: 'dashboard.component.html',
-  styleUrls: ['dashboard.component.scss'],
-  imports: [WidgetsDropdownComponent, CardComponent, CardBodyComponent, RowComponent, ColComponent, ButtonDirective, IconDirective, ReactiveFormsModule, ButtonGroupComponent, FormCheckLabelDirective, ChartjsComponent, CardFooterComponent, GutterDirective, ProgressComponent, WidgetsBrandComponent, CardHeaderComponent, TableDirective, AvatarComponent]
+  selector: 'app-dashboard',
+  standalone: true,
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
+  imports: [
+    WidgetsDropdownComponent,
+    CardComponent,
+    CardBodyComponent,
+    RowComponent,
+    ColComponent,
+    ButtonDirective,
+    IconDirective,
+    ReactiveFormsModule,
+    ButtonGroupComponent,
+    FormCheckLabelDirective,
+    ChartjsComponent,
+    CardFooterComponent,
+    GutterDirective,
+    ProgressComponent,
+    WidgetsBrandComponent,
+    CardHeaderComponent,
+    TableDirective,
+    AvatarComponent
+  ]
 })
 export class DashboardComponent implements OnInit {
-
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #document: Document = inject(DOCUMENT);
   readonly #renderer: Renderer2 = inject(Renderer2);
   readonly #chartsData: DashboardChartsData = inject(DashboardChartsData);
 
-  public users: IUser[] = [
+  // Korvix CRM Sales Team Data
+  public salesReps: ISalesRepPerformance[] = [
     {
-      name: 'Yiorgos Avraamu',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Us',
-      usage: 50,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Mastercard',
-      activity: '10 sec ago',
+      name: 'Alex Morgan',
+      role: 'Enterprise AE',
+      assignedLeads: 48,
+      dealVelocityDays: 14,
+      quotaAttainmentPct: 112,
+      region: 'Us',
+      paymentTier: 'Enterprise',
+      lastActive: '2 mins ago',
       avatar: './assets/images/avatars/1.jpg',
       status: 'success',
-      color: 'success'
+      progressColor: 'success'
     },
     {
-      name: 'Avram Tarasios',
-      state: 'Recurring ',
-      registered: 'Jan 1, 2021',
-      country: 'Br',
-      usage: 10,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Visa',
-      activity: '5 minutes ago',
+      name: 'Sarah Jenkins',
+      role: 'Senior Account Rep',
+      assignedLeads: 35,
+      dealVelocityDays: 21,
+      quotaAttainmentPct: 95,
+      region: 'Br',
+      paymentTier: 'Professional',
+      lastActive: '12 mins ago',
       avatar: './assets/images/avatars/2.jpg',
-      status: 'danger',
-      color: 'info'
+      status: 'success',
+      progressColor: 'info'
     },
     {
-      name: 'Quintin Ed',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'In',
-      usage: 74,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Stripe',
-      activity: '1 hour ago',
+      name: 'Liam O\'Connor',
+      role: 'Mid-Market Representative',
+      assignedLeads: 29,
+      dealVelocityDays: 28,
+      quotaAttainmentPct: 82,
+      region: 'In',
+      paymentTier: 'Growth',
+      lastActive: '1 hour ago',
       avatar: './assets/images/avatars/3.jpg',
       status: 'warning',
-      color: 'warning'
+      progressColor: 'warning'
     },
     {
-      name: 'Enéas Kwadwo',
-      state: 'Sleep',
-      registered: 'Jan 1, 2021',
-      country: 'Fr',
-      usage: 98,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Paypal',
-      activity: 'Last month',
+      name: 'Elena Rostova',
+      role: 'Lead SDR',
+      assignedLeads: 62,
+      dealVelocityDays: 9,
+      quotaAttainmentPct: 125,
+      region: 'Fr',
+      paymentTier: 'Enterprise',
+      lastActive: '3 hours ago',
       avatar: './assets/images/avatars/4.jpg',
-      status: 'secondary',
-      color: 'danger'
-    },
-    {
-      name: 'Agapetus Tadeáš',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Es',
-      usage: 22,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'ApplePay',
-      activity: 'Last week',
-      avatar: './assets/images/avatars/5.jpg',
       status: 'success',
-      color: 'primary'
-    },
-    {
-      name: 'Friderik Dávid',
-      state: 'New',
-      registered: 'Jan 1, 2021',
-      country: 'Pl',
-      usage: 43,
-      period: 'Jun 11, 2021 - Jul 10, 2021',
-      payment: 'Amex',
-      activity: 'Yesterday',
-      avatar: './assets/images/avatars/6.jpg',
-      status: 'info',
-      color: 'dark'
+      progressColor: 'success'
     }
   ];
 
   public mainChart: IChartProps = { type: 'line' };
   public mainChartRef: WritableSignal<any> = signal(undefined);
+
   #mainChartRefEffect = effect(() => {
     if (this.mainChartRef()) {
       this.setChartStyles();
     }
   });
-  public chart: Array<IChartProps> = [];
+
   public trafficRadioGroup = new FormGroup({
     trafficRadio: new FormControl('Month')
   });
@@ -147,24 +143,24 @@ export class DashboardComponent implements OnInit {
     this.updateChartOnColorModeChange();
   }
 
-  initCharts(): void {
+  public initCharts(): void {
     this.mainChartRef()?.stop();
     this.mainChart = this.#chartsData.mainChart;
   }
 
-  setTrafficPeriod(value: string): void {
+  public setTrafficPeriod(value: string): void {
     this.trafficRadioGroup.setValue({ trafficRadio: value });
     this.#chartsData.initMainChart(value);
     this.initCharts();
   }
 
-  handleChartRef($chartRef: any) {
+  public handleChartRef($chartRef: any): void {
     if ($chartRef) {
       this.mainChartRef.set($chartRef);
     }
   }
 
-  updateChartOnColorModeChange() {
+  private updateChartOnColorModeChange(): void {
     const unListen = this.#renderer.listen(this.#document.documentElement, 'ColorSchemeChange', () => {
       this.setChartStyles();
     });
@@ -174,7 +170,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  setChartStyles() {
+  private setChartStyles(): void {
     if (this.mainChartRef()) {
       setTimeout(() => {
         const options: ChartOptions = { ...this.mainChart.options };

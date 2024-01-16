@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ChartData, ChartDataset, ChartOptions, ChartType, PluginOptionsByType, ScaleOptions, TooltipLabelStyle } from 'chart.js';
 import { DeepPartial } from './utils';
-import { getStyle } from '@coreui/utils';
 
 export interface IChartProps {
   data?: ChartData;
@@ -10,120 +9,80 @@ export interface IChartProps {
   colors?: any;
   type: ChartType;
   legend?: any;
-
   [propName: string]: any;
 }
 
 @Injectable({
-  providedIn: 'any'
+  providedIn: 'root'
 })
 export class DashboardChartsData {
-  constructor() {
-    this.initMainChart();
-  }
-
   public mainChart: IChartProps = { type: 'line' };
 
-  public random(min: number, max: number) {
+  constructor() {
+    this.initMainChart('Month');
+  }
+
+  private random(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  initMainChart(period: string = 'Month') {
-    const brandSuccess = getStyle('--cui-success') ?? '#4dbd74';
-    const brandInfo = getStyle('--cui-info') ?? '#20a8d8';
-    const brandInfoBg = `rgba(${getStyle('--cui-info-rgb')}, .1)`
-    const brandDanger = getStyle('--cui-danger') ?? '#f86c6b';
+  public initMainChart(period: string = 'Month'): void {
+    const brandPrimary = '#6366f1';
+    const brandSuccess = '#10b981';
+    const brandTarget = '#f59e0b';
+    const brandPrimaryBg = 'rgba(99, 102, 241, 0.1)';
 
-    // mainChart
-    this.mainChart['elements'] = period === 'Month' ? 12 : 27;
-    this.mainChart['Data1'] = [];
-    this.mainChart['Data2'] = [];
-    this.mainChart['Data3'] = [];
+    const pointsCount = period === 'Day' ? 7 : period === 'Month' ? 12 : 5;
+    this.mainChart['Data1'] = []; // Won Revenue ($k)
+    this.mainChart['Data2'] = []; // Pipeline Target ($k)
+    this.mainChart['Data3'] = []; // Revenue Target / BEP ($k)
 
-    // generate random values for mainChart
-    for (let i = 0; i <= this.mainChart['elements']; i++) {
-      this.mainChart['Data1'].push(this.random(50, 240));
-      this.mainChart['Data2'].push(this.random(20, 160));
-      this.mainChart['Data3'].push(65);
+    for (let i = 0; i < pointsCount; i++) {
+      this.mainChart['Data1'].push(this.random(120, 240));
+      this.mainChart['Data2'].push(this.random(80, 180));
+      this.mainChart['Data3'].push(150); // Target line
     }
 
     let labels: string[] = [];
     if (period === 'Month') {
-      labels = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ];
+      labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    } else if (period === 'Day') {
+      labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     } else {
-      /* tslint:disable:max-line-length */
-      const week = [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
-      ];
-      labels = week.concat(week, week, week);
+      labels = ['2022', '2023', '2024', '2025', '2026'];
     }
 
-    const colors = [
+    const datasets: ChartDataset[] = [
       {
-        // brandInfo
-        backgroundColor: brandInfoBg,
-        borderColor: brandInfo,
-        pointHoverBackgroundColor: brandInfo,
+        data: this.mainChart['Data1'],
+        label: 'Closed Revenue ($k)',
+        backgroundColor: brandPrimaryBg,
+        borderColor: brandPrimary,
+        pointHoverBackgroundColor: brandPrimary,
         borderWidth: 2,
         fill: true
       },
       {
-        // brandSuccess
+        data: this.mainChart['Data2'],
+        label: 'Pipeline Forecast ($k)',
         backgroundColor: 'transparent',
-        borderColor: brandSuccess || '#4dbd74',
-        pointHoverBackgroundColor: '#fff'
+        borderColor: brandSuccess,
+        pointHoverBackgroundColor: '#fff',
+        borderWidth: 2
       },
       {
-        // brandDanger
+        data: this.mainChart['Data3'],
+        label: 'Monthly Target ($k)',
         backgroundColor: 'transparent',
-        borderColor: brandDanger || '#f86c6b',
-        pointHoverBackgroundColor: brandDanger,
+        borderColor: brandTarget,
+        pointHoverBackgroundColor: brandTarget,
         borderWidth: 1,
         borderDash: [8, 5]
       }
     ];
 
-    const datasets: ChartDataset[] = [
-      {
-        data: this.mainChart['Data1'],
-        label: 'Current',
-        ...colors[0]
-      },
-      {
-        data: this.mainChart['Data2'],
-        label: 'Previous',
-        ...colors[1]
-      },
-      {
-        data: this.mainChart['Data3'],
-        label: 'BEP',
-        ...colors[2]
-      }
-    ];
-
     const plugins: DeepPartial<PluginOptionsByType<any>> = {
-      legend: {
-        display: false
-      },
+      legend: { display: false },
       tooltip: {
         callbacks: {
           labelColor: (context) => ({ backgroundColor: context.dataset.borderColor } as TooltipLabelStyle)
@@ -131,63 +90,36 @@ export class DashboardChartsData {
       }
     };
 
-    const scales = this.getScales();
-
     const options: ChartOptions = {
       maintainAspectRatio: false,
       plugins,
-      scales,
+      scales: this.getScales(),
       elements: {
-        line: {
-          tension: 0.4
-        },
-        point: {
-          radius: 0,
-          hitRadius: 10,
-          hoverRadius: 4,
-          hoverBorderWidth: 3
-        }
+        line: { tension: 0.35 },
+        point: { radius: 2, hitRadius: 10, hoverRadius: 5 }
       }
     };
 
     this.mainChart.type = 'line';
     this.mainChart.options = options;
-    this.mainChart.data = {
-      datasets,
-      labels
-    };
+    this.mainChart.data = { datasets, labels };
   }
 
-  getScales() {
-    const colorBorderTranslucent = getStyle('--cui-border-color-translucent');
-    const colorBody = getStyle('--cui-body-color');
-
-    const scales: ScaleOptions<any> = {
+  public getScales(): ScaleOptions<any> {
+    return {
       x: {
-        grid: {
-          color: colorBorderTranslucent,
-          drawOnChartArea: false
-        },
-        ticks: {
-          color: colorBody
-        }
+        grid: { drawOnChartArea: false },
+        ticks: { color: '#64748b' }
       },
       y: {
-        border: {
-          color: colorBorderTranslucent
-        },
-        grid: {
-          color: colorBorderTranslucent
-        },
-        max: 250,
         beginAtZero: true,
+        max: 300,
         ticks: {
-          color: colorBody,
-          maxTicksLimit: 5,
-          stepSize: Math.ceil(250 / 5)
+          color: '#64748b',
+          maxTicksLimit: 6,
+          stepSize: 50
         }
       }
     };
-    return scales;
   }
 }
