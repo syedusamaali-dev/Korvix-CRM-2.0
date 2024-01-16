@@ -1,8 +1,112 @@
-<!-- Top Quick Metrics Widgets -->
-<app-widgets-dropdown />
+<!-- Top 4 KPI Gradient Cards -->
+<c-row [xs]="1" [sm]="2" [lg]="4" class="g-4 mb-4">
+  <!-- Widget 1: Active Leads (Indigo) -->
+  <c-col>
+    <div class="card widget-card card-kpi-primary text-white shadow-sm h-100 border-0">
+      <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fs-4 fw-semibold">
+            26K <span class="fs-6 fw-normal text-white-50">(-12.4% <svg cIcon name="cilArrowBottom"></svg>)</span>
+          </div>
+          <div class="text-white-75 small text-uppercase fw-bold tracking-wider">Active Leads</div>
+        </div>
+        <c-dropdown alignment="end">
+          <button cButton cDropdownToggle color="transparent" class="p-0 text-white" aria-label="Open menu">
+            <svg cIcon name="cilOptions"></svg>
+          </button>
+          <ul cDropdownMenu>
+            <li><a cDropdownItem href="#">View All Leads</a></li>
+            <li><a cDropdownItem href="#">Export Leads CSV</a></li>
+          </ul>
+        </c-dropdown>
+      </div>
+      <div class="chart-wrapper mt-3 mx-3" style="height: 70px;">
+        <c-chart type="line" [data]="kpiChartsData[0]" [options]="kpiChartsOptions[0]" />
+      </div>
+    </div>
+  </c-col>
 
-<!-- Main Revenue & Deal Velocity Chart -->
-<c-card class="my-4 shadow-sm">
+  <!-- Widget 2: Closed Revenue (Emerald) -->
+  <c-col>
+    <div class="card widget-card card-kpi-success text-white shadow-sm h-100 border-0">
+      <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fs-4 fw-semibold">
+            $62.4K <span class="fs-6 fw-normal text-white-50">(+40.9% <svg cIcon name="cilArrowTop"></svg>)</span>
+          </div>
+          <div class="text-white-75 small text-uppercase fw-bold tracking-wider">Closed Revenue</div>
+        </div>
+        <c-dropdown alignment="end">
+          <button cButton cDropdownToggle color="transparent" class="p-0 text-white" aria-label="Open menu">
+            <svg cIcon name="cilOptions"></svg>
+          </button>
+          <ul cDropdownMenu>
+            <li><a cDropdownItem href="#">Revenue Report</a></li>
+            <li><a cDropdownItem href="#">Download Statements</a></li>
+          </ul>
+        </c-dropdown>
+      </div>
+      <div class="chart-wrapper mt-3 mx-3" style="height: 70px;">
+        <c-chart type="line" [data]="kpiChartsData[1]" [options]="kpiChartsOptions[1]" />
+      </div>
+    </div>
+  </c-col>
+
+  <!-- Widget 3: Lead Win Rate (Amber) -->
+  <c-col>
+    <div class="card widget-card card-kpi-warning text-white shadow-sm h-100 border-0">
+      <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fs-4 fw-semibold">
+            24.9% <span class="fs-6 fw-normal text-white-50">(+84.7% <svg cIcon name="cilArrowTop"></svg>)</span>
+          </div>
+          <div class="text-white-75 small text-uppercase fw-bold tracking-wider">Lead Win Rate</div>
+        </div>
+        <c-dropdown alignment="end">
+          <button cButton cDropdownToggle color="transparent" class="p-0 text-white" aria-label="Open menu">
+            <svg cIcon name="cilOptions"></svg>
+          </button>
+          <ul cDropdownMenu>
+            <li><a cDropdownItem href="#">Funnel Analytics</a></li>
+            <li><a cDropdownItem href="#">Optimization Rules</a></li>
+          </ul>
+        </c-dropdown>
+      </div>
+      <div class="chart-wrapper mt-3" style="height: 70px;">
+        <c-chart type="line" [data]="kpiChartsData[2]" [options]="kpiChartsOptions[2]" />
+      </div>
+    </div>
+  </c-col>
+
+  <!-- Widget 4: Pipeline Deals (Rose Red) -->
+  <c-col>
+    <div class="card widget-card card-kpi-danger text-white shadow-sm h-100 border-0">
+      <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fs-4 fw-semibold">
+            44K <span class="fs-6 fw-normal text-white-50">(-23.6% <svg cIcon name="cilArrowBottom"></svg>)</span>
+          </div>
+          <div class="text-white-75 small text-uppercase fw-bold tracking-wider">Pipeline Deals</div>
+        </div>
+        <c-dropdown alignment="end">
+          <button cButton cDropdownToggle color="transparent" class="p-0 text-white" aria-label="Open menu">
+            <svg cIcon name="cilOptions"></svg>
+          </button>
+          <ul cDropdownMenu>
+            <li><a cDropdownItem href="#">Pipeline Board</a></li>
+            <li><a cDropdownItem href="#">Deal Velocity</a></li>
+          </ul>
+        </c-dropdown>
+      </div>
+      <div class="chart-wrapper mt-3 mx-3" style="height: 70px;">
+        <c-chart type="bar" [data]="kpiChartsData[3]" [options]="kpiChartsOptions[3]" />
+      </div>
+    </div>
+  </c-col>
+</c-row>
+
+<!-- Revenue Velocity & Target Forecast Chart -->
+<c-card class="my-4 shadow-sm border-0">
   <c-card-body>
     <c-row>
       <c-col sm="5">
@@ -10,7 +114,7 @@
         <div class="small text-body-secondary">Korvix CRM Real-time Pipeline Performance</div>
       </c-col>
       <c-col class="d-none d-md-block" sm="7">
-        <button cButton class="float-end btn-primary" color="primary" aria-label="Export Data">
+        <button cButton class="float-end btn-primary text-white" color="primary" aria-label="Export Data">
           <svg cIcon name="cilCloudDownload"></svg> Export CSV
         </button>
         <form [formGroup]="trafficRadioGroup">
@@ -73,22 +177,20 @@
       </c-col>
     </c-row>
 
-    <!-- Main Dynamic Chart -->
     <c-chart
       [data]="mainChart.data"
       [height]="300"
       [style.marginTop.px]="30"
       [options]="mainChart.options"
-      [type]="mainChart.type"
+      [type]="mainChart.type!"
       (chartRef)="handleChartRef($event)"
     >
       Main CRM Analytics Chart
     </c-chart>
   </c-card-body>
 
-  <!-- Key CRM Funnel Conversion Progress Summary -->
-  <c-card-footer>
-    <c-row class="text-center mb-2" [xl]="5" [lg]="4" [sm]="2" [xs]="1" [gutter]="4">
+  <c-card-footer class="bg-light">
+    <c-row class="text-center mb-2 g-4" [xl]="5" [lg]="4" [sm]="2" [xs]="1">
       <c-col>
         <div class="text-body-secondary">New Inbound Leads</div>
         <strong>240 Leads (66% Qual.)</strong>
@@ -107,28 +209,24 @@
       <c-col>
         <div class="text-body-secondary">Closed Won</div>
         <div class="fw-semibold text-truncate">32 Deals (13.3%)</div>
-        <c-progress class="mt-2" thin color="danger" value="80" aria-label="Closed won conversion" />
+        <c-progress class="mt-2" thin color="primary" value="80" aria-label="Closed won conversion" />
       </c-col>
       <c-col class="d-none d-xl-block">
         <div class="text-body-secondary">Churn / Lost Rate</div>
         <div class="fw-semibold text-truncate">Low Rate (4.2%)</div>
-        <c-progress class="mt-2" thin color="secondary" value="12" aria-label="Churn rate" />
+        <c-progress class="mt-2" thin color="danger" value="12" aria-label="Churn rate" />
       </c-col>
     </c-row>
   </c-card-footer>
 </c-card>
 
-<!-- Secondary Brand & Campaign Performance Widgets -->
-<app-widgets-brand [withCharts]="true" />
-
-<!-- Lead Acquisition Channels & Source Performance -->
+<!-- Lead Acquisition Channels -->
 <c-row class="mt-4">
   <c-col xs>
-    <c-card class="mb-4">
-      <c-card-header>Lead Acquisition Sources & Inbound Channels</c-card-header>
+    <c-card class="mb-4 shadow-sm border-0">
+      <c-card-header class="fw-bold">Lead Acquisition Sources & Inbound Channels</c-card-header>
       <c-card-body>
         <c-row>
-          <!-- Left Side: Inbound vs Outbound Client Split -->
           <c-col md="6" xl="6" xs="12">
             <c-row>
               <c-col xs="6">
@@ -144,31 +242,21 @@
                 </div>
               </c-col>
             </c-row>
-            <hr class="mt-0" />
+            <hr class="mt-0 opacity-25" />
 
-            <!-- Daily Lead Volume Progress Bar Breakdown -->
-            <div class="progress-group mb-3" *ngFor="let day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']">
-              <div class="progress-group-prepend">
-                <span class="text-body-secondary small">{{ day }}</span>
+            @for (day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']; track day) {
+              <div class="progress-group mb-3">
+                <div class="progress-group-prepend">
+                  <span class="text-body-secondary small">{{ day }}</span>
+                </div>
+                <div class="progress-group-bars">
+                  <c-progress thin color="info" value="42" aria-label="Inbound" />
+                  <c-progress thin color="danger" value="78" aria-label="Outbound" />
+                </div>
               </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="info" value="42" aria-label="Inbound" />
-                <c-progress thin color="danger" value="78" aria-label="Outbound" />
-              </div>
-            </div>
-            
-            <div class="legend text-center mt-3 d-none d-md-block">
-              <small>
-                <span class="badge bg-info me-1">&nbsp;</span>
-                <span>Inbound Web</span>
-                &nbsp;&nbsp;
-                <span class="badge bg-danger me-1">&nbsp;</span>
-                <span>Outbound Campaign</span>
-              </small>
-            </div>
+            }
           </c-col>
 
-          <!-- Right Side: Channel Source Metrics -->
           <c-col md="6" xl="6" xs="12">
             <c-row>
               <c-col xs="6">
@@ -184,8 +272,7 @@
                 </div>
               </c-col>
             </c-row>
-
-            <hr class="mt-0" />
+            <hr class="mt-0 opacity-25" />
 
             <div class="progress-group mb-3">
               <div class="progress-group-header">
@@ -208,17 +295,6 @@
                 <c-progress thin color="info" value="28" aria-label="LinkedIn" />
               </div>
             </div>
-
-            <div class="progress-group mb-3">
-              <div class="progress-group-header">
-                <svg cIcon class="icon icon-lg me-2" name="cibFacebook"></svg>
-                <span>Meta Campaigns</span>
-                <span class="ms-auto font-semibold">32 Leads <span class="text-body-secondary small">(10%)</span></span>
-              </div>
-              <div class="progress-group-bars">
-                <c-progress thin color="warning" value="10" aria-label="Meta campaigns" />
-              </div>
-            </div>
           </c-col>
         </c-row>
       </c-card-body>
@@ -226,19 +302,19 @@
   </c-col>
 </c-row>
 
-<!-- Sales Team Performance & Quota Table -->
+<!-- Sales Rep Performance Table -->
 <c-row>
   <c-col xs>
-    <c-card class="mb-4">
-      <c-card-header>Active Account Reps & Quota Performance</c-card-header>
-      <c-card-body>
+    <c-card class="mb-4 shadow-sm border-0">
+      <c-card-header class="fw-bold">Active Account Reps & Quota Performance</c-card-header>
+      <c-card-body class="p-0">
         <table
           [hover]="true"
           [responsive]="true"
           [striped]="true"
           align="middle"
           cTable
-          class="mb-0 border"
+          class="mb-0 border-0"
         >
           <thead class="text-nowrap text-truncate">
             <tr>
@@ -284,7 +360,13 @@
                   <c-progress thin [value]="rep.quotaAttainmentPct > 100 ? 100 : rep.quotaAttainmentPct" [color]="rep.progressColor" aria-label="Quota attainment" />
                 </td>
                 <td class="text-center">
-                  <span class="badge bg-light text-dark border">{{ rep.paymentTier }}</span>
+                  @if (rep.paymentTier === 'Enterprise') {
+                    <span class="badge badge-tier-enterprise px-2 py-1">Enterprise</span>
+                  } @else if (rep.paymentTier === 'Professional') {
+                    <span class="badge badge-tier-pro px-2 py-1">Professional</span>
+                  } @else {
+                    <span class="badge badge-tier-growth px-2 py-1">Growth</span>
+                  }
                 </td>
                 <td>
                   <div class="small text-body-secondary">Last Sync</div>
