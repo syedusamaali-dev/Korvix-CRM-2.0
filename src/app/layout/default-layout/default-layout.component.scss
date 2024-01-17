@@ -13,27 +13,52 @@
     min-height: 100%;
   }
 
-  //.sidebar-nav {
-  //  scrollbar-color: var(--cui-gray-500, #444) transparent;
-  //}
+  /* Custom Sidebar Styling */
+  .sidebar {
+    /* Main Background & Borders */
+    --cui-sidebar-bg: #1e1e2d; /* Dark slate blue background */
+    --cui-sidebar-border-color: #2b2b40;
+
+    /* Header & Footer Background */
+    --cui-sidebar-header-bg: #151521;
+    --cui-sidebar-footer-bg: #151521;
+
+    /* Nav Item Text & Icon Colors */
+    --cui-sidebar-nav-link-color: #a2a3b7;
+    --cui-sidebar-nav-link-icon-color: #6366f1; /* Vibrant accent for icons */
+
+    /* Hover States */
+    --cui-sidebar-nav-link-hover-color: #ffffff;
+    --cui-sidebar-nav-link-hover-bg: #2b2b40;
+    --cui-sidebar-nav-link-hover-icon-color: #818cf8;
+
+    /* Active Nav Item */
+    --cui-sidebar-nav-link-active-color: #ffffff;
+    --cui-sidebar-nav-link-active-bg: #6366f1; /* Korvix Primary Accent */
+    --cui-sidebar-nav-link-active-icon-color: #ffffff;
+
+    /* Group Headers / Section Labels */
+    --cui-sidebar-nav-title-color: #565674;
+  }
 }
 
-// ng-scrollbar css variables
-//.cui-scrollbar {
-//  --scrollbar-border-radius: 7px;
-//  --scrollbar-padding: 1px;
-//  --scrollbar-viewport-margin: 0;
-//  --scrollbar-track-color: transparent;
-//  --scrollbar-wrapper-color: transparent;
-//  --scrollbar-thumb-color: rgba(0, 0, 0, 0.2);
-//  --scrollbar-thumb-hover-color: var(--scrollbar-thumb-color);
-//  --scrollbar-size: 5px;
-//  --scrollbar-hover-size: var(--scrollbar-size);
-//  --scrollbar-thumb-transition: height ease-out 150ms, width ease-out 150ms;
-//  --scrollbar-track-transition: height ease-out 150ms, width ease-out 150ms;
-//}
+/* Logo Sizing Adjustments */
+.logo-korvix {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.sidebar-brand-full.logo-korvix {
+  height: 40px;
+  width: auto;
+}
+
+.sidebar-brand-narrow.logo-korvix {
+  height: 32px;
+  width: auto;
+}
 
 .logo-korvix {
-  width: 220px;
-  height: 120px;
+  width: 220px !important;
+  height: 120px !important;
 }
