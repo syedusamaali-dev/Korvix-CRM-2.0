@@ -144,55 +144,73 @@ screeshot not displaying in preview fix this see my folder naming covention
 
 ### Dashboard
 
-![Dashboard](./README-assets/dashboard.png)
+<p align="center">
+  <img src="./README-assets/dashboard.png" alt="Dashboard" width="100%" />
+</p>
 
 ---
 
 ### Customers
 
-![Customers](./README-assets/customers.png)
+<p align="center">
+  <img src="./README-assets/customers.png" alt="Customers" width="100%" />
+</p>
 
 ---
 
 ### Companies
 
-![Companies](./README-assets/companies.png)
+<p align="center">
+  <img src="./README-assets/companies.png" alt="Companies" width="100%" />
+</p>
 
 ---
 
 ### Contacts
 
-![Contacts](./README-assets/contacts.png)
+<p align="center">
+  <img src="./README-assets/contacts.png" alt="Contacts" width="100%" />
+</p>
 
 ---
 
 ### Leads
 
-![Leads](./README-assets/leads.png)
+<p align="center">
+  <img src="./README-assets/leads.png" alt="Leads" width="100%" />
+</p>
 
 ---
 
 ### Deals
 
-![Deals](./README-assets/deals.png)
+<p align="center">
+  <img src="./README-assets/deals.png" alt="Deals" width="100%" />
+</p>
 
 ---
 
 ### Tasks
 
-![Tasks](./README-assets/tasks.png)
+<p align="center">
+  <img src="./README-assets/tasks.png" alt="Tasks" width="100%" />
+</p>
 
 ---
 
 ### Calendar
 
-![Calendar](./README-assets/calendar.png)
+<p align="center">
+  <img src="./README-assets/calendar.png" alt="Calendar" width="100%" />
+</p>
 
 ---
 
 ### Reports
 
-![Reports](./README-assets/reports.png)
+<p align="center">
+  <img src="./README-assets/reports.png" alt="Reports" width="100%" />
+</p>
 
 ---
 
