@@ -138,79 +138,60 @@ src/
 ```
 
 ---
-screeshot not displaying in preview fix this see my folder naming covention
 
 ## 📷 Screenshots
 
 ### Dashboard
 
-<p align="center">
-  <img src="./README-assets/dashboard.png" alt="Dashboard" width="100%" />
-</p>
+![Dashboard](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/dashboard.png)
 
 ---
 
 ### Customers
 
-<p align="center">
-  <img src="./README-assets/customers.png" alt="Customers" width="100%" />
-</p>
+![Customers](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/customers.png)
 
 ---
 
 ### Companies
 
-<p align="center">
-  <img src="./README-assets/companies.png" alt="Companies" width="100%" />
-</p>
+![Companies](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/companies.png)
 
 ---
 
 ### Contacts
 
-<p align="center">
-  <img src="./README-assets/contacts.png" alt="Contacts" width="100%" />
-</p>
+![Contacts](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/contacts.png)
 
 ---
 
 ### Leads
 
-<p align="center">
-  <img src="./README-assets/leads.png" alt="Leads" width="100%" />
-</p>
+![Leads](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/leads.png)
 
 ---
 
 ### Deals
 
-<p align="center">
-  <img src="./README-assets/deals.png" alt="Deals" width="100%" />
-</p>
+![Deals](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/deals.png)
 
 ---
 
 ### Tasks
 
-<p align="center">
-  <img src="./README-assets/tasks.png" alt="Tasks" width="100%" />
-</p>
+![Tasks](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/tasks.png)
 
 ---
 
 ### Calendar
 
-<p align="center">
-  <img src="./README-assets/calendar.png" alt="Calendar" width="100%" />
-</p>
+![Calendar](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/calendar.png)
 
 ---
 
 ### Reports
 
-<p align="center">
-  <img src="./README-assets/reports.png" alt="Reports" width="100%" />
-</p>
+![Reports](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/reports.png)
 
 ---
 
