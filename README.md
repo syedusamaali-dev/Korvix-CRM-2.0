@@ -1,298 +1,308 @@
-````markdown
+<div align="center">
+
 # 🚀 Korvix CRM
 
-A modern Enterprise CRM (Customer Relationship Management) system built with **Angular** and **Node.js**, designed with a scalable architecture and a professional SaaS interface.
+### Modern Enterprise CRM built with Angular & Node.js
 
-> **Status:** 🚧 Frontend Development in Progress
+A scalable, enterprise-grade Customer Relationship Management (CRM) platform focused on performance, clean architecture, and modern UI.
 
----
-
-## 🔗 Links
-
-- **Repository:** https://github.com/Usama220/Korvix-CRM
-- **Issues:** https://github.com/Usama220/Korvix-CRM/issues
-- **Live Demo:** Coming Soon
-
----
-
-## 📌 About
-
-Korvix CRM is a portfolio project that demonstrates enterprise-level application development using modern web technologies.
-
-The goal is to build a production-style CRM with a clean architecture, reusable components, responsive design, authentication, analytics, and AI-powered features.
+![Status](https://img.shields.io/badge/Status-Frontend%20Development-orange)
+![Angular](https://img.shields.io/badge/Angular-20-DD0031?logo=angular)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript)
+![Node.js](https://img.shields.io/badge/Node.js-22-339933?logo=node.js)
+![Express](https://img.shields.io/badge/Express.js-000000?logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
 ---
 
-## ✨ Planned Features
+### ⭐ Enterprise CRM Portfolio Project
+
+</div>
+
+---
+
+# 📸 Project Preview
+
+> *(Replace these images with your own screenshots as development progresses.)*
+
+## Dashboard
+
+![Dashboard](README-assets/dashboard.png)
+
+---
+
+## Customers
+
+![Customers](README-assets/customers.png)
+
+---
+
+## Companies
+
+![Companies](README-assets/companies.png)
+
+---
+
+## Contacts
+
+![Contacts](README-assets/contacts.png)
+
+---
+
+## Leads
+
+![Leads](README-assets/leads.png)
+
+---
+
+## Deals
+
+![Deals](README-assets/deals.png)
+
+---
+
+## Tasks
+
+![Tasks](README-assets/tasks.png)
+
+---
+
+## Calendar
+
+![Calendar](README-assets/calendar.png)
+
+---
+
+## Reports
+
+![Reports](README-assets/reports.png)
+
+---
+
+# ✨ Features
 
 ### Dashboard
 - Business KPIs
 - Revenue Analytics
-- Customer Statistics
-- Charts & Reports
+- Customer Analytics
+- Sales Charts
 - Recent Activities
 - Quick Actions
 
-### Customers
-- Customer Management
-- Search & Filters
-- Customer Profile
-- Activity Timeline
-- Notes
-- Documents
+### CRM
 
-### Companies
-- Company Management
-- Company Profile
+- Customers
+- Companies
 - Contacts
+- Leads
 - Deals
-- Documents
+- Tasks
+- Calendar
+- Reports
 
-### Contacts
-- Contact Directory
-- Contact Details
-- Email & Phone Information
-- Timeline
-- Notes
+### Authentication
 
-### Leads
-- Lead Pipeline
-- Lead Scoring
-- Lead Sources
-- Lead Conversion
+- Login
+- Register
+- JWT Authentication
+- Role Based Access (Planned)
 
-### Deals
-- Sales Pipeline
-- Kanban Board
-- Deal Stages
-- Revenue Tracking
+### Analytics
 
-### Tasks
-- Task Management
-- Calendar Integration
-- Priorities
-- Reminders
-
-### Calendar
-- Meetings
-- Events
-- Follow-ups
-- Daily / Weekly / Monthly View
-
-### Reports
-- Sales Reports
 - Revenue Reports
-- Customer Analytics
+- Sales Reports
 - Team Performance
+- Customer Growth
 - Export Reports
 
 ---
 
-## 🛠 Tech Stack
+# 🛠 Tech Stack
 
-### Frontend
+## Frontend
 
 - Angular
 - TypeScript
+- RxJS
 - CoreUI
 - Bootstrap
 - SCSS
-- RxJS
 
-### Backend (Planned)
+## Backend
 
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
-- JWT Authentication
+- JWT
+- REST API
 
-### Tools
+## Tools
 
 - Git
 - GitHub
-- Postman
 - VS Code
+- Postman
+- Figma
 
 ---
 
-## 📁 Project Structure
+# 📂 Folder Structure
 
 ```text
-src/
-├── app/
-│   ├── core/
-│   ├── shared/
-│   ├── layout/
-│   ├── views/
-│   │   ├── dashboard/
-│   │   ├── customers/
-│   │   ├── companies/
-│   │   ├── contacts/
-│   │   ├── leads/
-│   │   ├── deals/
-│   │   ├── tasks/
-│   │   ├── calendar/
-│   │   └── reports/
-│   └── app.routes.ts
+src
+│
+├── app
+│   ├── core
+│   ├── shared
+│   ├── layout
+│   ├── services
+│   ├── guards
+│   ├── interceptors
+│   ├── models
+│   ├── components
+│   └── views
+│       ├── dashboard
+│       ├── customers
+│       ├── companies
+│       ├── contacts
+│       ├── leads
+│       ├── deals
+│       ├── tasks
+│       ├── calendar
+│       └── reports
 ```
 
 ---
 
-## 📷 Screenshots
+# 🚀 Getting Started
 
-### Dashboard
-
-![Dashboard](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/dashboard.png)
-
----
-
-### Customers
-
-![Customers](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/customers.png)
-
----
-
-### Companies
-
-![Companies](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/companies.png)
-
----
-
-### Contacts
-
-![Contacts](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/contacts.png)
-
----
-
-### Leads
-
-![Leads](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/leads.png)
-
----
-
-### Deals
-
-![Deals](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/deals.png)
-
----
-
-### Tasks
-
-![Tasks](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/tasks.png)
-
----
-
-### Calendar
-
-![Calendar](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/calendar.png)
-
----
-
-### Reports
-
-![Reports](https://raw.githubusercontent.com/syedusamaali-dev/Korvix-CRM-2.0/main/README-assets/reports.png)
-
----
-
-
-## 🚀 Getting Started
-
-### Clone the repository
+Clone Repository
 
 ```bash
-git clone https://github.com/Usama220/Korvix-CRM.git
+git clone https://github.com/syedusamaali-dev/Korvix-CRM-2.0.git
 ```
 
-### Navigate to the project
+Open Project
 
 ```bash
-cd Korvix-CRM
+cd Korvix-CRM-2.0
 ```
 
-### Install dependencies
+Install Dependencies
 
 ```bash
 npm install
 ```
 
-### Start the development server
+Run Project
 
 ```bash
 ng serve
 ```
 
-Open your browser and visit:
+Open
 
-```text
+```
 http://localhost:4200
 ```
 
 ---
 
-## 📈 Roadmap
+# 🗺 Development Roadmap
 
-- [x] Project Setup
-- [x] Angular Integration
-- [x] CoreUI Theme Integration
-- [ ] Dashboard Module
-- [ ] Customers Module
-- [ ] Companies Module
-- [ ] Contacts Module
-- [ ] Leads Module
-- [ ] Deals Module
-- [ ] Tasks Module
-- [ ] Calendar Module
-- [ ] Reports Module
-- [ ] Authentication
-- [ ] Backend APIs
-- [ ] MongoDB Integration
-- [ ] Role-Based Access Control
-- [ ] AI Assistant
-- [ ] Deployment
+## Phase 1
+
+- ✅ Angular Setup
+- ✅ CoreUI Integration
+- ✅ Dashboard Layout
+
+## Phase 2
+
+- ⏳ Customers
+- ⏳ Companies
+- ⏳ Contacts
+- ⏳ Leads
+- ⏳ Deals
+- ⏳ Tasks
+- ⏳ Calendar
+- ⏳ Reports
+
+## Phase 3
+
+- Authentication
+- JWT
+- Roles & Permissions
+- Backend APIs
+
+## Phase 4
+
+- MongoDB
+- Dashboard Analytics
+- File Upload
+- Notifications
+
+## Phase 5
+
+- AI Assistant
+- AI Lead Scoring
+- AI Report Generator
+- AI Email Writer
+
+## Phase 6
+
+- Docker
+- CI/CD
+- Deployment
+- Production Release
 
 ---
 
-## 🚀 Future Enhancements
+# 🚀 Future Features
 
 - AI Chat Assistant
-- Smart Lead Scoring
+- Voice Commands
+- AI Meeting Notes
 - AI Email Generator
-- AI Meeting Summary
-- Real-time Notifications
-- File Management
-- Activity Logs
+- AI Lead Prediction
+- Activity Timeline
+- Audit Logs
 - Dark Mode
-- Multi-language Support
-- Docker Support
-- CI/CD Pipeline
+- Notifications
 - Email Integration
 - SMS Integration
-- Push Notifications
-- Audit Logs
-- Analytics Dashboard
+- Responsive Mobile App
+- Multi-language Support
 
 ---
 
-## 🤝 Contributing
+# 🤝 Contributing
 
-Contributions, suggestions, and feature requests are welcome.
+Contributions are welcome.
 
-If you'd like to improve Korvix CRM, feel free to fork the repository and submit a pull request.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push your branch
+5. Open a Pull Request
 
 ---
 
-## 👨‍💻 Author
+# 📄 License
 
-**Usama Ali**
+Licensed under the MIT License.
 
-GitHub: https://github.com/Usama220
+---
 
-Building **Korvix CRM** to showcase enterprise-level Angular, Node.js, and MongoDB development.
-````
+# 👨‍💻 Author
+
+### Usama Ali
+
+GitHub
+
+https://github.com/syedusamaali-dev
+
+---
+
+## ⭐ If you like this project, don't forget to Star the repository!
