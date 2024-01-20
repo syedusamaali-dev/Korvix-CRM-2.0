@@ -138,60 +138,61 @@ src/
 ```
 
 ---
+screeshot not displaying in preview fix this see my folder naming covention
 
 ## 📷 Screenshots
 
 ### Dashboard
 
-![Dashboard](README-assets/dashboard.png)
+![Dashboard](./README-assets/dashboard.png)
 
 ---
 
 ### Customers
 
-![Customers](README-assets/customers.png)
+![Customers](./README-assets/customers.png)
 
 ---
 
 ### Companies
 
-![Companies](README-assets/companies.png)
+![Companies](./README-assets/companies.png)
 
 ---
 
 ### Contacts
 
-![Contacts](README-assets/contacts.png)
+![Contacts](./README-assets/contacts.png)
 
 ---
 
 ### Leads
 
-![Leads](README-assets/leads.png)
+![Leads](./README-assets/leads.png)
 
 ---
 
 ### Deals
 
-![Deals](README-assets/deals.png)
+![Deals](./README-assets/deals.png)
 
 ---
 
 ### Tasks
 
-![Tasks](README-assets/tasks.png)
+![Tasks](./README-assets/tasks.png)
 
 ---
 
 ### Calendar
 
-![Calendar](README-assets/calendar.png)
+![Calendar](./README-assets/calendar.png)
 
 ---
 
 ### Reports
 
-![Reports](README-assets/reports.png)
+![Reports](./README-assets/reports.png)
 
 ---
 
