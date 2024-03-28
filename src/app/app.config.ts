@@ -10,6 +10,7 @@ import {
 } from '@angular/router';
 import { IconSetService } from '@coreui/icons-angular';
 import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,7 +27,8 @@ export const appConfig: ApplicationConfig = {
       withHashLocation()
     ),
     IconSetService,
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    provideHttpClient()
   ]
 };
 
