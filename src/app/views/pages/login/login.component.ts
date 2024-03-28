@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { SocketService } from '../../../core/services/socket.service';
 import { IconDirective } from '@coreui/icons-angular';
 
 import {
@@ -15,7 +16,7 @@ import {
   FormDirective,
   InputGroupComponent,
   InputGroupTextDirective,
-  RowComponent
+  RowComponent,
 } from '@coreui/angular';
 
 import { AuthService } from '../../../core/services/auth.service';
@@ -24,6 +25,7 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-login',
   templateUrl: './login.component.html',
   imports: [
+    NgIf,
     FormsModule,
     ContainerComponent,
     RowComponent,
@@ -36,11 +38,10 @@ import { AuthService } from '../../../core/services/auth.service';
     InputGroupTextDirective,
     IconDirective,
     FormControlDirective,
-    ButtonDirective
-  ]
+    ButtonDirective,
+  ],
 })
 export class LoginComponent {
-
   email = '';
   password = '';
 
@@ -49,11 +50,11 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private socketService: SocketService,
   ) {}
 
   login(): void {
-
     this.errorMessage = '';
 
     if (!this.email || !this.password) {
@@ -63,32 +64,28 @@ export class LoginComponent {
 
     this.loading = true;
 
-    this.authService.login(
-      this.email,
-      this.password
-    ).subscribe({
+    this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-
-        console.log('Login response:', response);
+        console.log('Login successful:', response);
 
         this.authService.saveToken(response.token);
 
+        // Connect Socket.IO
+        this.socketService.connect();
+
         this.loading = false;
 
-        // Temporary redirect
         this.router.navigate(['/dashboard']);
       },
 
       error: (error) => {
-
         console.error('Login error:', error);
 
         this.loading = false;
 
         this.errorMessage =
-          error.error?.message ||
-          'Login failed. Please try again.';
-      }
+          error.error?.message || 'Invalid email or password.';
+      },
     });
   }
 }

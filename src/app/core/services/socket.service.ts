@@ -9,7 +9,14 @@ export class SocketService {
 
   private socket!: Socket;
 
-  connect(token: string): void {
+  connect(): void {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      console.error('❌ No authentication token found.');
+      return;
+    }
+
     if (this.socket?.connected) {
       return;
     }
@@ -37,6 +44,10 @@ export class SocketService {
   on<T>(event: string): Observable<T> {
     return new Observable<T>((observer) => {
 
+      if (!this.socket) {
+        return;
+      }
+
       this.socket.on(event, (data: T) => {
         observer.next(data);
       });
@@ -50,6 +61,7 @@ export class SocketService {
   disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
+      this.socket = undefined!;
     }
   }
 }

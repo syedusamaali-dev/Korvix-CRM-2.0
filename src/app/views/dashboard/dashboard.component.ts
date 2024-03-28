@@ -22,6 +22,7 @@ import {
 import { ChartjsComponent } from '@coreui/angular-chartjs';
 import { IconDirective } from '@coreui/icons-angular';
 import { DashboardChartsData, IChartProps } from './dashboard-charts-data';
+import { NotificationService } from '../../core/services/notification.service';
 
 interface ISalesRep {
   name: string;
@@ -129,11 +130,28 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor(private chartsData: DashboardChartsData) {}
+  constructor(private chartsData: DashboardChartsData,
+
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
+
+    this.notificationService
+      .onNewNotification()
+      .subscribe((notification) => {
+
+        console.log(
+          '🔔 REAL-TIME NOTIFICATION:',
+          notification
+        );
+
+      });
+  
     this.initMainChart();
     this.initKpiCharts();
+
+    
   }
 
   public initMainChart(): void {
