@@ -21,3 +21,14 @@
 // We use those styles to show code examples, you should remove them in your application.
 @use "examples";
 
+.dropdown-menu.notification-dropdown {
+  width: 340px !important;
+  min-width: 340px !important;
+  max-width: 340px !important;
+  padding: 0 !important;
+}
+
+.dropdown-menu.notification-dropdown .notification-item {
+  width: 100%;
+  box-sizing: border-box;
+}
