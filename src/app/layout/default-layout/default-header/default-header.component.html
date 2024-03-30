@@ -1,6 +1,14 @@
-<!--<c-header class="mb-4 d-print-none" position="sticky">-->
+<!-- <c-header class="mb-4 d-print-none" position="sticky"> -->
+
 <ng-container>
+
+  <!-- ========================= -->
+  <!-- TOP HEADER -->
+  <!-- ========================= -->
+
   <c-container [fluid]="true" class="border-bottom px-4">
+
+    <!-- Sidebar Toggle -->
     <button
       [cSidebarToggle]="sidebarId()"
       cHeaderToggler
@@ -11,65 +19,394 @@
     >
       <svg cIcon name="cilMenu" size="lg"></svg>
     </button>
+
+
+    <!-- ========================= -->
+    <!-- MAIN NAVIGATION -->
+    <!-- ========================= -->
+
     <c-header-nav class="d-none d-md-flex">
+
       <c-nav-item>
-        <a cNavLink routerLink="/dashboard" routerLinkActive="active"
-          >Dashboard</a
+        <a
+          cNavLink
+          routerLink="/dashboard"
+          routerLinkActive="active"
         >
+          Dashboard
+        </a>
       </c-nav-item>
+
       <c-nav-item>
-        <a cNavLink routerLink="/users" routerLinkActive="active">Users</a>
-      </c-nav-item>
-      <c-nav-item>
-        <a cNavLink routerLink="/settings" routerLinkActive="active"
-          >Settings</a
+        <a
+          cNavLink
+          routerLink="/users"
+          routerLinkActive="active"
         >
+          Users
+        </a>
       </c-nav-item>
+
+      <c-nav-item>
+        <a
+          cNavLink
+          routerLink="/settings"
+          routerLinkActive="active"
+        >
+          Settings
+        </a>
+      </c-nav-item>
+
     </c-header-nav>
+
+
+    <!-- ========================= -->
+    <!-- RIGHT SIDE HEADER ICONS -->
+    <!-- ========================= -->
 
     <c-header-nav class="d-none d-md-flex ms-auto">
-      <a cNavLink>
-        <svg cIcon class="my-1" name="cilBell" size="lg"></svg>
+
+      <!-- ========================= -->
+      <!-- NOTIFICATION BELL -->
+      <!-- ========================= -->
+
+      <c-dropdown
+        variant="nav-item"
+        placement="bottom-end"
+      >
+
+        <!-- Bell Button -->
+
+        <button
+          cDropdownToggle
+          [caret]="false"
+          class="nav-link position-relative"
+          aria-label="Notifications"
+        >
+
+          <svg
+            cIcon
+            class="my-1"
+            name="cilBell"
+            size="lg"
+          ></svg>
+
+
+          <!-- Unread Badge -->
+
+          @if (unreadCount$ | async; as unreadCount) {
+
+            @if (unreadCount > 0) {
+
+              <c-badge
+                color="danger"
+                shape="rounded-pill"
+                class="position-absolute top-0 start-100 translate-middle"
+              >
+                {{ unreadCount }}
+              </c-badge>
+
+            }
+
+          }
+
+        </button>
+
+
+        <!-- ========================= -->
+        <!-- NOTIFICATION DROPDOWN -->
+        <!-- ========================= -->
+
+        <div
+          cDropdownMenu
+          class="notification-dropdown p-0"
+        >
+
+          <!-- Header -->
+
+          <div
+            class="px-3 py-3 border-bottom"
+          >
+
+            <div
+              class="d-flex justify-content-between align-items-center"
+            >
+
+              <strong>
+                Notifications
+              </strong>
+
+
+              @if (unreadCount$ | async; as unreadCount) {
+
+                @if (unreadCount > 0) {
+
+                  <small class="text-body-secondary">
+                    {{ unreadCount }} unread
+                  </small>
+
+                } @else {
+
+                  <small class="text-body-secondary">
+                    All caught up
+                  </small>
+
+                }
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <!-- ========================= -->
+          <!-- NOTIFICATION LIST -->
+          <!-- ========================= -->
+
+          @if (notifications$ | async; as notifications) {
+
+
+            <!-- No Notifications -->
+
+            @if (notifications.length === 0) {
+
+              <div
+                class="text-center text-body-secondary p-4"
+              >
+
+                <svg
+                  cIcon
+                  name="cilBell"
+                  size="xl"
+                  class="mb-2"
+                ></svg>
+
+                <div>
+                  No notifications
+                </div>
+
+              </div>
+
+            }
+
+
+            <!-- Notifications -->
+
+            @else {
+
+              @for (
+                notification of notifications.slice(0, 5);
+                track notification._id
+              ) {
+
+                <div
+                  class="notification-item px-3 py-3 border-bottom"
+                  [class.bg-body-secondary]="!notification.isRead"
+                >
+
+                  <div
+                    class="d-flex gap-2"
+                  >
+
+                    <!-- Unread Dot -->
+
+                    @if (!notification.isRead) {
+
+                      <span
+                        class="notification-dot mt-1"
+                      ></span>
+
+                    }
+
+
+                    <!-- Notification Content -->
+
+                    <div class="flex-grow-1">
+
+                      <!-- Title -->
+
+                      <div
+                        class="fw-semibold"
+                      >
+                        {{ notification.title }}
+                      </div>
+
+
+                      <!-- Message -->
+
+                      <div
+                        class="small text-body-secondary mt-1"
+                      >
+                        {{ notification.message }}
+                      </div>
+
+
+                      <!-- Time -->
+
+                      <div
+                        class="small text-body-tertiary mt-1"
+                      >
+                        {{ notification.createdAt | date:'short' }}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              }
+
+            }
+
+          }
+
+
+          <!-- ========================= -->
+          <!-- VIEW ALL -->
+          <!-- ========================= -->
+
+          <div
+            class="border-top"
+          >
+
+            <a
+              cDropdownItem
+              routerLink="/notifications"
+              class="text-center py-2"
+            >
+              View all notifications
+            </a>
+
+          </div>
+
+        </div>
+
+      </c-dropdown>
+
+
+      <!-- ========================= -->
+      <!-- LIST ICON -->
+      <!-- ========================= -->
+
+      <a
+        cNavLink
+        aria-label="Tasks"
+      >
+        <svg
+          cIcon
+          class="my-1"
+          name="cilList"
+          size="lg"
+        ></svg>
       </a>
-      <a cNavLink>
-        <svg cIcon class="my-1" name="cilList" size="lg"></svg>
+
+
+      <!-- ========================= -->
+      <!-- MESSAGE ICON -->
+      <!-- ========================= -->
+
+      <a
+        cNavLink
+        aria-label="Messages"
+      >
+        <svg
+          cIcon
+          class="my-1"
+          name="cilEnvelopeOpen"
+          size="lg"
+        ></svg>
       </a>
-      <a cNavLink>
-        <svg cIcon class="my-1" name="cilEnvelopeOpen" size="lg"></svg>
-      </a>
+
     </c-header-nav>
+
+
+    <!-- ========================= -->
+    <!-- THEME SELECTOR -->
+    <!-- ========================= -->
 
     <c-header-nav class="ms-auto ms-md-0">
+
       <div class="nav-item py-1">
-        <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
+
+        <div
+          class="vr h-100 mx-2 text-body text-opacity-75"
+        ></div>
+
       </div>
-      <ng-container *ngTemplateOutlet="themeDropdown" />
+
+
+      <ng-container
+        *ngTemplateOutlet="themeDropdown"
+      />
+
+
       <div class="nav-item py-1">
-        <div class="vr h-100 mx-2 text-body text-opacity-75"></div>
+
+        <div
+          class="vr h-100 mx-2 text-body text-opacity-75"
+        ></div>
+
       </div>
+
     </c-header-nav>
+
+
+    <!-- ========================= -->
+    <!-- USER DROPDOWN -->
+    <!-- ========================= -->
 
     <c-header-nav class="mx-0">
-      <ng-container *ngTemplateOutlet="userDropdown" />
+
+      <ng-container
+        *ngTemplateOutlet="userDropdown"
+      />
+
     </c-header-nav>
+
   </c-container>
-  <c-container [fluid]="true" class="px-4">
+
+
+  <!-- ========================= -->
+  <!-- BREADCRUMB -->
+  <!-- ========================= -->
+
+  <c-container
+    [fluid]="true"
+    class="px-4"
+  >
+
     <c-breadcrumb-router />
+
   </c-container>
+
 </ng-container>
-<!--</c-header>-->
+
+
+<!-- </c-header> -->
+
+
+<!-- ===================================================== -->
+<!-- USER DROPDOWN TEMPLATE -->
+<!-- ===================================================== -->
 
 <ng-template #userDropdown>
+
   <c-dropdown
     [popperOptions]="{ placement: 'bottom-start' }"
     variant="nav-item"
   >
+
+    <!-- User Avatar -->
+
     <button
       [caret]="false"
       cDropdownToggle
       class="py-0 pe-0"
       aria-label="Open user menu"
     >
+
       <c-avatar
         shape="rounded-1"
         size="md"
@@ -78,115 +415,377 @@
         textColor="primary"
         alt="User avatar"
       />
+
     </button>
-    <ul cDropdownMenu class="pt-0 w-auto">
+
+
+    <!-- User Menu -->
+
+    <ul
+      cDropdownMenu
+      class="pt-0 w-auto"
+    >
+
+      <!-- Account Header -->
+
       <li>
+
         <h6
           cDropdownHeader
           class="bg-body-secondary text-body-secondary fw-semibold py-2 rounded-top"
         >
           Account
         </h6>
+
       </li>
+
+
+      <!-- Updates -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilBell"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilBell"
+          ></svg>
+
           Updates
-          <c-badge class="ms-2 float-end" color="info"> 42</c-badge>
+
+          <c-badge
+            class="ms-2 float-end"
+            color="info"
+          >
+            42
+          </c-badge>
+
         </a>
+
       </li>
+
+
+      <!-- Messages -->
+
       <li>
-        <a cDropdownItem routerLink="/apps/email/inbox">
-          <svg cIcon class="me-2" name="cilEnvelopeOpen"></svg>
+
+        <a
+          cDropdownItem
+          routerLink="/apps/email/inbox"
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilEnvelopeOpen"
+          ></svg>
+
           Messages
-          <c-badge class="ms-2 float-end" color="success"> 42 </c-badge>
+
+          <c-badge
+            class="ms-2 float-end"
+            color="success"
+          >
+            42
+          </c-badge>
+
         </a>
+
       </li>
+
+
+      <!-- Tasks -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilTask"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilTask"
+          ></svg>
+
           Tasks
-          <c-badge class="ms-2 float-end" color="danger"> 42</c-badge>
+
+          <c-badge
+            class="ms-2 float-end"
+            color="danger"
+          >
+            42
+          </c-badge>
+
         </a>
+
       </li>
+
+
+      <!-- Comments -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilCommentSquare"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilCommentSquare"
+          ></svg>
+
           Comments
-          <c-badge class="ms-auto" color="warning"> 42</c-badge>
+
+          <c-badge
+            class="ms-auto"
+            color="warning"
+          >
+            42
+          </c-badge>
+
         </a>
+
       </li>
+
+
+      <!-- Settings Header -->
+
       <li>
+
         <h6
           cDropdownHeader
           class="bg-body-secondary text-body-secondary fw-semibold py-2"
         >
           Settings
         </h6>
+
       </li>
-      <li></li>
+
+
+      <!-- Profile -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilUser"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilUser"
+          ></svg>
+
           Profile
+
         </a>
+
       </li>
+
+
+      <!-- Settings -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilSettings"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilSettings"
+          ></svg>
+
           Settings
+
         </a>
+
       </li>
+
+
+      <!-- Payments -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilCreditCard"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilCreditCard"
+          ></svg>
+
           Payments
-          <c-badge class="ms-2 float-end" color="secondary"> 42 </c-badge>
+
+          <c-badge
+            class="ms-2 float-end"
+            color="secondary"
+          >
+            42
+          </c-badge>
+
         </a>
+
       </li>
+
+
+      <!-- Projects -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilFile"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilFile"
+          ></svg>
+
           Projects
-          <c-badge class="ms-2 float-end" color="primary"> 42 </c-badge>
+
+          <c-badge
+            class="ms-2 float-end"
+            color="primary"
+          >
+            42
+          </c-badge>
+
         </a>
+
       </li>
+
+
+      <!-- Divider -->
+
       <li>
+
         <hr cDropdownDivider />
+
       </li>
+
+
+      <!-- Lock Account -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilLockLocked"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilLockLocked"
+          ></svg>
+
           Lock Account
+
         </a>
+
       </li>
+
+
+      <!-- Logout -->
+
       <li>
-        <a cDropdownItem routerLink="">
-          <svg cIcon class="me-2" name="cilAccountLogout"></svg>
+
+        <a
+          cDropdownItem
+          routerLink=""
+        >
+
+          <svg
+            cIcon
+            class="me-2"
+            name="cilAccountLogout"
+          ></svg>
+
           Logout
+
         </a>
+
       </li>
+
     </ul>
+
   </c-dropdown>
+
 </ng-template>
 
+
+<!-- ===================================================== -->
+<!-- THEME DROPDOWN TEMPLATE -->
+<!-- ===================================================== -->
+
 <ng-template #themeDropdown>
-  <c-dropdown alignment="end" variant="nav-item">
-    <button [caret]="false" cDropdownToggle aria-label="Open theme picker">
-      <svg cIcon [name]="icons()" size="lg"></svg>
+
+  <c-dropdown
+    alignment="end"
+    variant="nav-item"
+  >
+
+    <button
+      [caret]="false"
+      cDropdownToggle
+      aria-label="Open theme picker"
+    >
+
+      <svg
+        cIcon
+        [name]="icons()"
+        size="lg"
+      ></svg>
+
     </button>
+
+
     <div cDropdownMenu>
-      @for (mode of colorModes; track mode.name) {
+
+      @for (
+        mode of colorModes;
+        track mode.name
+      ) {
+
         <button
           (click)="colorMode.set(mode.name)"
           [active]="colorMode() === mode.name"
           cDropdownItem
           class="d-flex align-items-center"
         >
-          <svg cIcon class="me-2" [name]="mode.icon" size="lg"></svg>
+
+          <svg
+            cIcon
+            class="me-2"
+            [name]="mode.icon"
+            size="lg"
+          ></svg>
+
           {{ mode.text }}
+
         </button>
+
       }
+
     </div>
+
   </c-dropdown>
+
 </ng-template>

@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input , OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import {
@@ -21,13 +21,19 @@ import {
   NavLinkDirective,
   SidebarToggleDirective,
 } from '@coreui/angular';
-
+import { Observable } from 'rxjs';
 import { IconDirective } from '@coreui/icons-angular';
-
+import {
+  NotificationService,
+  Notification,
+} from '../../../core/services/notification.service';
+import { AsyncPipe , DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
   imports: [
+    CommonModule,
     ContainerComponent,
     HeaderTogglerDirective,
     SidebarToggleDirective,
@@ -47,9 +53,11 @@ import { IconDirective } from '@coreui/icons-angular';
     DropdownItemDirective,
     BadgeComponent,
     DropdownDividerDirective,
+    DatePipe,
+    AsyncPipe
   ],
 })
-export class DefaultHeaderComponent extends HeaderComponent {
+export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   readonly #colorModeService = inject(ColorModeService);
   readonly colorMode = this.#colorModeService.colorMode;
 
@@ -66,10 +74,22 @@ export class DefaultHeaderComponent extends HeaderComponent {
       'cilSun'
     );
   });
-
-  constructor() {
+  notifications$: Observable<Notification[]>;
+  unreadCount$: Observable<number>;
+  constructor(private notificationService: NotificationService) {
     super();
+
+    this.notifications$ = this.notificationService.notifications$;
+
+    this.unreadCount$ = this.notificationService.unreadCount$;
   }
+
+ ngOnInit(): void {
+  console.log('🔔 Notification system initialized');
+
+  this.notificationService.loadNotifications();
+  this.notificationService.listenForNotifications();
+}
 
   readonly sidebarId = input('sidebar1');
 

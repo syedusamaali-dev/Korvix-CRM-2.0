@@ -1,0 +1,23 @@
+.notification-dropdown {
+  width: 360px;
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.notification-item:hover {
+  background-color: var(--cui-tertiary-bg);
+}
+
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  margin-top: 7px;
+  border-radius: 50%;
+  background-color: var(--cui-danger);
+}

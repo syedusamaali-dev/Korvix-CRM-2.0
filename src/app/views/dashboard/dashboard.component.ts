@@ -137,16 +137,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.notificationService
-      .onNewNotification()
-      .subscribe((notification) => {
-
-        console.log(
-          '🔔 REAL-TIME NOTIFICATION:',
-          notification
-        );
-
-      });
+    
   
     this.initMainChart();
     this.initKpiCharts();
