@@ -24,11 +24,16 @@ A scalable, enterprise-grade Customer Relationship Management (CRM) platform foc
 
 # 📸 Project Preview
 
-> *(Replace these images with your own screenshots as development progresses.)*
 
 ## Dashboard
 
 ![Dashboard](README-assets/dashboard.png)
+
+---
+
+## Notification
+
+![Notification](README-assets/Notification%20implementation%20Socketio.PNG)
 
 ---
 
