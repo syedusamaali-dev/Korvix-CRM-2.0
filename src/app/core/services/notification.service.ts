@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SocketService } from './socket.service';
+import { API_BASE_URL } from '../api.config';
 
 export interface Notification {
   _id: string;
@@ -29,7 +30,7 @@ interface NotificationResponse {
 })
 export class NotificationService {
 
-  private readonly apiUrl = 'http://localhost:5000/api/notifications';
+  private readonly apiUrl = `${API_BASE_URL}/notifications`;
 
   private notificationsSubject =
     new BehaviorSubject<Notification[]>([]);

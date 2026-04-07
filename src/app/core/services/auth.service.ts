@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
+import { API_BASE_URL } from '../api.config';
 
 interface LoginResponse {
   success: boolean;
@@ -20,7 +21,7 @@ interface LoginResponse {
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private readonly apiUrl = `${API_BASE_URL}/auth`;
 
   constructor(private http: HttpClient) {}
 
@@ -32,6 +33,15 @@ export class AuthService {
         password
       }
     );
+  }
+
+  register(payload: Record<string, unknown>): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/register`, payload);
+  }
+
+  getProfile(): Observable<LoginResponse['data']> {
+    return this.http.get<{ success: boolean; data: LoginResponse['data'] }>(`${this.apiUrl}/me`)
+      .pipe(map(response => response.data));
   }
 
   saveToken(token: string): void {
