@@ -4,34 +4,40 @@
       <c-col lg="7" md="9" xl="6">
         <c-card class="mx-4">
           <c-card-body class="p-4">
-            <form cForm>
+            <form cForm (ngSubmit)="register()">
               <h1>Register</h1>
               <p class="text-body-secondary">Create your account</p>
+              <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
               <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilUser"></svg>
                 </span>
-                <input autoComplete="name" cFormControl placeholder="Username" />
+                <input autoComplete="given-name" cFormControl placeholder="First name" [(ngModel)]="firstName" name="firstName" required />
+              </c-input-group>
+              <c-input-group class="mb-3">
+                <span cInputGroupText><svg cIcon name="cilUser"></svg></span>
+                <input autoComplete="family-name" cFormControl placeholder="Last name" [(ngModel)]="lastName" name="lastName" required />
               </c-input-group>
               <c-input-group class="mb-3">
                 <span cInputGroupText>&#64;</span>
-                <input autoComplete="email" cFormControl placeholder="Email" />
+                <input autoComplete="email" cFormControl placeholder="Email" type="email" [(ngModel)]="email" name="email" required />
               </c-input-group>
               <c-input-group class="mb-3">
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
-                <input autoComplete="new-password" cFormControl placeholder="Password" type="password" />
+                <input autoComplete="new-password" cFormControl placeholder="Password" type="password" [(ngModel)]="password" name="password" required />
               </c-input-group>
               <c-input-group class="mb-4">
                 <span cInputGroupText>
                   <svg cIcon name="cilLockLocked"></svg>
                 </span>
-                <input autoComplete="new-password" cFormControl placeholder="Repeat password" type="password" />
+                <input autoComplete="new-password" cFormControl placeholder="Repeat password" type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required />
               </c-input-group>
               <div class="d-grid">
-                <button cButton color="success">Create Account</button>
+                <button cButton color="success" type="submit" [disabled]="loading">{{ loading ? 'Creating account...' : 'Create Account' }}</button>
               </div>
+              <p class="mt-3 mb-0 text-center">Already have an account? <a routerLink="/login">Sign in</a></p>
             </form>
           </c-card-body>
         </c-card>

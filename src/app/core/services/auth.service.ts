@@ -3,18 +3,22 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { API_BASE_URL } from '../api.config';
 
+export interface UserSession {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}
+
 interface LoginResponse {
   success: boolean;
   message: string;
   token: string;
-  data: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-  };
+  data: UserSession;
 }
+
+interface RegisterResponse { success: boolean; message: string; data: Omit<UserSession, 'role'>; }
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +39,8 @@ export class AuthService {
     );
   }
 
-  register(payload: Record<string, unknown>): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/register`, payload);
+  register(payload: { firstName: string; lastName: string; email: string; password: string }): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, payload);
   }
 
   getProfile(): Observable<LoginResponse['data']> {
@@ -48,12 +52,20 @@ export class AuthService {
     localStorage.setItem('token', token);
   }
 
+  saveUser(user: UserSession): void { localStorage.setItem('user', JSON.stringify(user)); }
+
+  saveSession(response: LoginResponse): void {
+    this.saveToken(response.token);
+    this.saveUser(response.data);
+  }
+
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
   logout(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 
   isLoggedIn(): boolean {

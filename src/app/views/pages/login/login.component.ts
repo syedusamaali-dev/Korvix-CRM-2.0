@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SocketService } from '../../../core/services/socket.service';
 import { IconDirective } from '@coreui/icons-angular';
 
@@ -27,6 +27,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [
     NgIf,
     FormsModule,
+    RouterLink,
     ContainerComponent,
     RowComponent,
     ColComponent,
@@ -68,7 +69,7 @@ export class LoginComponent {
       next: (response) => {
         console.log('Login successful:', response);
 
-        this.authService.saveToken(response.token);
+        this.authService.saveSession(response);
 
         // Connect Socket.IO
         this.socketService.connect();
