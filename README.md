@@ -16,11 +16,15 @@ A scalable, enterprise-grade Customer Relationship Management (CRM) platform foc
 
 ---
 
-### ⭐ Enterprise CRM Portfolio Project
+### ⭐ Enterprise CRM Project
 
 </div>
 
----
+| | |
+| :--- | :--- |
+| **⭐ Live Demo** | https://korvix-crm-2-0.vercel.app/ |
+| **⭐ Backend Code** | https://github.com/syedusamaali-dev/korvix-crm-backend.git |
+
 
 # 📸 Project Preview
 
