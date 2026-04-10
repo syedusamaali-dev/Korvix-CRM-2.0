@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, input , OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import {
   AvatarComponent,
@@ -29,6 +29,8 @@ import {
 } from '../../../core/services/notification.service';
 import { AsyncPipe , DatePipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
+import { SocketService } from '../../../core/services/socket.service';
 @Component({
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
@@ -76,7 +78,12 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   });
   notifications$: Observable<Notification[]>;
   unreadCount$: Observable<number>;
-  constructor(private notificationService: NotificationService) {
+  constructor(
+    private notificationService: NotificationService,
+    private authService: AuthService,
+    private socketService: SocketService,
+    private router: Router,
+  ) {
     super();
 
     this.notifications$ = this.notificationService.notifications$;
@@ -90,6 +97,12 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
   this.notificationService.loadNotifications();
   this.notificationService.listenForNotifications();
 }
+
+  logout(): void {
+    this.socketService.disconnect();
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   readonly sidebarId = input('sidebar1');
 
